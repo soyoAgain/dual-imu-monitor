@@ -62,7 +62,7 @@ STATE_COLOR = {
     STATE_ICM_FALLBACK: "#d97706",
     STATE_INVALID: "#dc2626",
 }
-TRAJECTORY_HALF_RANGE_M = 0.05
+TRAJECTORY_HALF_RANGE_M = 0.10
 
 DUAL_RE = re.compile(
     r"seq=(?P<seq>\d+) t=(?P<t>[\d.]+) "
