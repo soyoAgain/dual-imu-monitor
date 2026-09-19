@@ -37,6 +37,10 @@ STANDARD_GRAVITY = 9.80665
 ICM_ACCEL_LSB_PER_G = 2048.0
 ICM_GYRO_LSB_PER_DPS = 16.4
 ICM_SAMPLE = struct.Struct("<7i")
+MPU_TEMP_LSB_PER_C = 340.0
+MPU_TEMP_OFFSET_C = 36.53
+ICM_TEMP_LSB_PER_C = 326.8
+ICM_TEMP_OFFSET_C = 25.0
 LOCK_PATH = "/tmp/rpmsg_imu_reader.lock"
 OFFSET_ALPHA = 0.05
 SYNC_JUMP_MS = 20.0
@@ -183,19 +187,25 @@ def main():
             if icm_values is None:
                 icm_accel = (0.0, 0.0, 0.0)
                 icm_gyro = (0.0, 0.0, 0.0)
+                icm_temperature = float("nan")
                 age_ms = -1.0
             else:
                 icm_gyro = tuple(value / ICM_GYRO_LSB_PER_DPS for value in icm_values[0])
                 icm_accel = tuple(value / ICM_ACCEL_LSB_PER_G * STANDARD_GRAVITY for value in icm_values[1])
+                icm_temperature = icm_values[2] / ICM_TEMP_LSB_PER_C + ICM_TEMP_OFFSET_C
                 # ICM sample time minus this frame's mapped MPU sample time.
                 age_ms = (icm_time - mapped_time) * 1000.0
 
+            mpu_temperature = packet[8] / MPU_TEMP_LSB_PER_C + MPU_TEMP_OFFSET_C
+
             print(
-                "seq=%d t=%.6f mpu_a=%s mpu_g=%s icm_a=%s icm_g=%s age_icm_ms=%.2f "
+                "seq=%d t=%.6f mpu_a=%s mpu_g=%s icm_a=%s icm_g=%s "
+                "mpu_t=%.2f icm_t=%.2f age_icm_ms=%.2f "
                 "mpu_sat=%d errors=%d/%d/%d/%d m4_ms=%d" % (
                     packet[3], mapped_time,
                     format_values(accel), format_values(gyro),
                     format_values(icm_accel), format_values(icm_gyro),
+                    mpu_temperature, icm_temperature,
                     age_ms, saturation,
                     packet[12], packet[13], spi_errors, sync_errors, m4_ms,
                 ),
