@@ -229,6 +229,33 @@ $$
 - 时间对齐后两路陀螺仪模长的相关系数显著上升。
 - 超出时延或样本年龄阈值时，软件明确标记本帧不可融合。
 
+### 阶段四执行结果（2026-09-19，已完成）
+
+**实现**：新增 `tools/calibrate_dual_imu.py`，读取 `monitor_dual_imu.py` 日志，对两路陀螺仪模长去均值、归一化后，在 ±0.5 s 范围内以 0.5 ms 步长做互相关估计时延；同时按 5 s 窗口评估稳定性，并输出逐帧可用性标记：
+
+- `age_icm_ms > 30 ms` 或 `|τ| > 50 ms` 的帧标记为不可融合；
+- `--flags <path>` 输出 `seq,fusable` 逐帧标记文件。
+
+**实测数据**（1000 帧、19.98 s，手动绕三轴转动）：
+
+```text
+gyro magnitude: mpu max=188.80 dps, icm max=187.51 dps
+estimated delay tau = +33.00 ms (peak corr 0.9965)
+correlation at tau=0: 0.9458 -> at tau=+33.00 ms: 0.9965
+per-window tau (5.0 s): [+33.50, +32.50, +32.00] ms, spread 1.50 ms
+frames with age>30 ms: 0
+fusable frames: 1000/1000
+RESULT: PASS
+```
+
+**解读**
+
+- `τ = +33.0 ms` 表示 ICM20608 采样在时间上领先日志中的 MPU 采样约 33 ms；来源是 M4 采样时间戳与实际 RPMsg 送达之间的固定延迟（软件 I²C 读取约 16 ms + 传输/缓冲），属于常量偏差，可由该时延修正。
+- 两路角速度模长在转动时幅值一致（188.80 vs 187.51 dps），交叉验证了 ICM20608 ±2000 dps 量程换算。
+- 三项完成标准全部满足：时延窗口间波动 1.5 ms、相关系数由 0.946 提升至 0.997、不可融合帧有明确标记逻辑。
+
+**原始记录**：`diagnostic_logs/phase4_time_alignment/dual_imu_motion3.log`、`time_alignment_result.txt`、`fusable_flags.csv`。
+
 ## 8. 阶段五：通过相关性自动标定坐标系
 
 ### 标定数据采集
