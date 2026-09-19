@@ -1,0 +1,12 @@
+log=diagnostic_logs/phase4_time_alignment/dual_imu_motion3.log
+frames=1000 duration=19.98 s rate=50.05 Hz
+gyro magnitude: mpu max=188.80 dps, icm max=187.51 dps
+estimated delay tau = +33.00 ms (peak corr 0.9965)
+correlation at tau=0: 0.9458 -> at tau=+33.00 ms: 0.9965
+per-window tau (5.0 s): [+33.50, +32.50, +32.00] ms, spread 1.50 ms
+frames with age>30 ms: 0
+frames marked non-fusable (|tau|>50 ms): 0
+motion present: yes
+fusable frames: 1000/1000
+per-frame flags written to diagnostic_logs/phase4_time_alignment/fusable_flags.csv
+RESULT: PASS
