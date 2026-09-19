@@ -23,6 +23,8 @@
 - GUI 入口是 `run_gui.sh`，主程序是 `gui/app.py`。
 - Dropbear 已改为常驻 `dropbear.service`，便于 GUI 反复停止和启动。
 
+> **Dropbear 是什么**：Dropbear 是面向嵌入式设备的轻量级 SSH 服务器/客户端实现，用来替代体积较大的 OpenSSH。开发板 OpenSTLinux 用它提供 22 端口的 SSH 服务：`dropbear` 为服务端、`dbclient` 为客户端、`dropbearkey` 用于生成主机密钥（本项目为 `/etc/dropbear/dropbear_rsa_host_key`），Mac 侧因此可以用 `ssh mp157`、`scp` 访问开发板。它版本较旧、只提供 `ssh-rsa` 主机密钥，所以 Mac 的 `~/.ssh/config` 中需要 `HostKeyAlgorithms +ssh-rsa`。本项目把服务从 socket 激活改为常驻 `dropbear.service`，避免 GUI 反复停止/启动期间出现服务未及时拉起导致的连接失败。
+
 ## 3. 总体数据流
 
 ```text
@@ -145,7 +147,7 @@ $$
 \boldsymbol{\omega}_{s,k}
 $$
 
-其中 (s\in\{\mathrm{MPU},\mathrm{ICM}\})。
+其中 $s\in\{\mathrm{MPU},\mathrm{ICM}\}$。
 
 ### 旋转矩阵估计
 
@@ -205,9 +207,9 @@ $$
 
 其中：
 
-- (\mathbf R) 是陀螺仪估计的坐标旋转矩阵；
-- (\mathbf S_a) 是加速度轴向比例修正矩阵；
-- (\mathbf b_{a,\mathrm{ICM}}) 是 ICM20608 加速度零偏。
+- $\mathbf R$ 是陀螺仪估计的坐标旋转矩阵；
+- $\mathbf S_a$ 是加速度轴向比例修正矩阵；
+- $\mathbf b_{a,\mathrm{ICM}}$ 是 ICM20608 加速度零偏。
 
 MPU6050 Y 轴饱和样本不参与加速度标定拟合。优先使用：
 
@@ -248,9 +250,9 @@ $$
 a_y^{\mathrm{fused}}
 =
 \begin{cases}
-a_{y,\mathrm{MPU}}, & \text{MPU_PRIMARY} \\
+a_{y,\mathrm{MPU}}, & \text{MPU\_PRIMARY} \\
 w a_{y,\mathrm{MPU}}+(1-w)a_{y,\mathrm{ICM}\rightarrow\mathrm{MPU}}, & \text{BLENDED} \\
-a_{y,\mathrm{ICM}\rightarrow\mathrm{MPU}}, & \text{ICM_FALLBACK}
+a_{y,\mathrm{ICM}\rightarrow\mathrm{MPU}}, & \text{ICM\_FALLBACK}
 \end{cases}
 $$
 
@@ -327,8 +329,8 @@ $$
 - 协议版本和标定算法版本；
 - 两颗传感器的芯片身份或设备标识；
 - 标定时间；
-- 时间偏移 (\hat{\tau})；
-- 旋转矩阵 (\mathbf R)；
+- 时间偏移 $\hat{\tau}$；
+- 旋转矩阵 $\mathbf R$；
 - 陀螺仪零偏与加速度零偏；
 - 加速度比例修正参数；
 - RMSE、相关系数和条件数；
