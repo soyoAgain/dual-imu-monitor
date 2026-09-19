@@ -55,6 +55,45 @@ ICM20608 --SPI1----------> Linux ICM 驱动 ------> 时间对齐/标定/融合
 - `git status` 无未知改动。
 - 可以从基线提交恢复当前单 MPU6050 GUI。
 
+### 阶段一执行结果（2026-09-19，已完成）
+
+**Git 基线**
+
+| 提交 | 说明 |
+|---|---|
+| `831bf0f` | `chore: establish MP157 project baseline`，代码基线；包含 `run_gui.sh`、`gui/app.py`、`tools/monitor_rpmsg_imu.py`、`tools/read_rpmsg_imu.py` 等 |
+| `1c6d64c` | `docs: add dual-IMU fusion implementation pipeline`，本流水线文档 |
+| `6838b00` | `docs: fix KaTeX parse error and clarify Dropbear in fusion pipeline`，公式渲染与 Dropbear 说明修正 |
+| `91a0581` | `test: record phase-1 baseline (MPU6050 samples, SSH and M4 state)`，阶段一基线数据 |
+
+阶段一记录后 `git status` 干净；`run_gui.sh --demo` 冒烟测试退出码 0、无异常。`831bf0f` 中可直接恢复单 MPU6050 GUI。
+
+**基线数据文件**：`diagnostic_logs/phase1_baseline/`
+
+| 文件 | 内容 |
+|---|---|
+| `git_state.txt` | 记录时的 HEAD、近期提交、工作区状态、基线提交中的 GUI 文件清单 |
+| `ssh_state.txt` | 主机名 `ATK-MP157`、Linux `5.4.31-g886e225be`、Dropbear `active`/`enabled`、`.ssh` 权限 700/600 |
+| `m4_state.txt` | `remoteproc0` 为 `running`、固件 `m4_rpmsg.elf`、`/dev/ttyRPMSG0` 存在；开机约 12.9 s 由服务自动启动 M4 |
+| `mpu6050_samples.txt` | 126 帧真实 RPMsg 样本（含逐帧原始值）及统计 |
+
+**样本统计（静止，126 帧）**
+
+```text
+accel_x: mean=  -224.21  std=25.3
+accel_y: mean= 32767.00  std= 0.0   （126/126 帧饱和，已知故障）
+accel_z: mean= 14559.27  std=40.9
+gyro_x/y/z: mean= 609.25 / 176.43 / -39.85
+temperature: 27.39 °C
+累计错误：i2c=13, tx=0
+```
+
+**结论与遗留观察**
+
+- 完成标准全部满足：基线可回退、工作区干净、真实样本与板端状态已归档。
+- M4 现由 `m4-rpmsg.service` 开机自动启动，与阶段二及之后的“重启自动恢复”验收前提一致。
+- `i2c_errors=13` 为 M4 启动以来的累计值（此前测试中为 0），当前逐帧读取正常；阶段二/三需继续观察是否增长，若持续增长再单独排查。
+
 ## 5. 阶段二：验证 ICM20608 Linux 驱动
 
 ### 操作
