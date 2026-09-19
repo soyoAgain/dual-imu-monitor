@@ -183,7 +183,7 @@ sudo route delete -host 169.254.50.2
 1. 在 Mac 终端进入本项目目录，先开启串口录制，再重启开发板：
 
    ```bash
-   cd /Users/xiechushu/project/Joint_inversion_for_simulation/docs/简历和套磁信/嵌入式mp157
+   cd ~/project/Joint_inversion_for_simulation/docs/简历和套磁信/嵌入式mp157
    mkdir -p diagnostic_logs/fourth_restart
    cd diagnostic_logs/fourth_restart
    screen -L /dev/cu.usbserial-1140 115200

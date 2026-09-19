@@ -1,3 +1,5 @@
+opencode -s ses_f48fab946ffevjObDlHZFkvZNv
+
 screen /dev/cu.usbserial-1140 115200
 
 screen -D -r 30672
