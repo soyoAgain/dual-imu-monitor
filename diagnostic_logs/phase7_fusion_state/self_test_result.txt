@@ -1,0 +1,6 @@
+[self-test] band oscillation transitions: 0 (states: ['BLENDED'])
+[self-test] saturation/recovery transitions: 2 segments: [('BLENDED', 100), ('ICM_FALLBACK', 124), ('BLENDED', 76)]
+[self-test] timeout frames marked INVALID without output: True
+[self-test] INVALID integration frozen: True
+[self-test] BLENDED weight check: state=BLENDED y=7.0000 expected=7.0000
+self-test RESULT: PASS

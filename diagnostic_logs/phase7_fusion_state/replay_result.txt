@@ -1,0 +1,8 @@
+replay log=diagnostic_logs/phase3_dual_stream/dual_imu_3000.log frames=3000
+state counts: {'ICM_FALLBACK': 3000}
+state transitions: 0
+segments=1 short_segments(<10 frames)=0
+replay log=diagnostic_logs/phase4_time_alignment/dual_imu_motion3.log frames=1000
+state counts: {'ICM_FALLBACK': 1000}
+state transitions: 0
+segments=1 short_segments(<10 frames)=0
