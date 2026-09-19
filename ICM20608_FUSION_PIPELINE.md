@@ -393,6 +393,41 @@ MPU6050 Y 轴饱和样本不参与加速度标定拟合。优先使用：
 - 静止时融合加速度模长接近重力加速度。
 - 转换后 Y 轴不再长期卡在 `19.613 m/s²`。
 
+### 阶段六执行结果（2026-09-19，已完成）
+
+**实现**：扩展 `tools/calibrate_dual_imu.py`：
+
+- `--accel-static <log>`：多姿态静止日志，按陀螺阈值分割静止段、按重力方向区分姿态；
+- 以**重力模长约束**拟合 ICM 加速度零偏（弱正则化取最小范数解），比例固定为出厂值 1.0；
+- 输出姿态数、各姿态 `|a_pred|`、重力 RMSE、与 MPU 的姿态均值相关性与斜率、静态均值偏差（即 MPU 加速度零偏）、去偏后 RMSE、重建 Y 轴范围；
+- `--accel-json <path>`：保存标定参数与质量指标。
+
+**数据**：4 个小角度倾斜姿态（前/后/左/右各 30～45°，每姿态 54～86 帧）。因组件安装受限无法做大角度翻转，比例项不可观，故不拟合比例。
+
+**结果**
+
+```text
+poses detected: 4 (samples: [84, 86, 54, 84])
+icm accel bias (m/s^2): [ 0.0362 -0.0413 -0.0044]
+per-pose |a_pred| vs g: [9.800 9.809 9.811 9.807]
+gravity RMSE: 0.0040 m/s^2
+pose-mean correlation with MPU: x=0.99999 z=0.99820; slope x=0.9995 z=0.9839
+static mean offset (pred - mpu): [-0.240  -18.906   1.118] m/s^2
+static detrended RMSE: [0.087 2.513 0.235] m/s^2
+reconstructed Y range (static): -3.603 .. 4.174 m/s^2
+RESULT: PASS
+```
+
+**解读与发现**
+
+- ICM20608 加速度几乎无需标定：拟合零偏仅 ±0.04 m/s²，重力 RMSE 0.004 m/s²，与出厂校准一致；
+- **MPU6050 加速度存在明显零偏**：以重力为基准时，MPU 的 X/Z 与 ICM 转换值相差约 (+0.24, ?, −1.12) m/s²（约 0.115 g），且该偏差在各姿态近似恒定。由于 MPU Y 饱和，无法用常规方法修正其 Y 零偏；阶段七/八的融合可考虑 X/Z 也采用 ICM 转换值或对该零偏做补偿；
+- `mpu_accel_bias_mps2` 中的 Y 分量（−18.9）是 MPU Y 饱和导致的差值，不是真实零偏；
+- 重建 Y 轴随姿态在 −3.6～+4.2 m/s² 之间变化，不再固定于 `19.613 m/s²`；
+- 三项完成标准全部满足。
+
+**原始记录**：`diagnostic_logs/phase6_accel_calibration/`（多姿态日志、`accel_calibration_result.txt`、`accel_calibration.json`）。
+
 ## 10. 阶段七：实现带回滞的融合状态机
 
 ### 输入有效性
