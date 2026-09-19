@@ -20,11 +20,14 @@ import re
 import sys
 
 import numpy as np
+from scipy.optimize import least_squares
 
 LINE_RE = re.compile(
     r"seq=(?P<seq>\d+) t=(?P<t>[\d.]+) "
-    r"mpu_a=[^ ]+ mpu_g=(?P<mgx>[-\d.]+),(?P<mgy>[-\d.]+),(?P<mgz>[-\d.]+) "
-    r"icm_a=[^ ]+ icm_g=(?P<igx>[-\d.]+),(?P<igy>[-\d.]+),(?P<igz>[-\d.]+) "
+    r"mpu_a=(?P<max>[-\d.]+),(?P<may>[-\d.]+),(?P<maz>[-\d.]+) "
+    r"mpu_g=(?P<mgx>[-\d.]+),(?P<mgy>[-\d.]+),(?P<mgz>[-\d.]+) "
+    r"icm_a=(?P<iax>[-\d.]+),(?P<iay>[-\d.]+),(?P<iaz>[-\d.]+) "
+    r"icm_g=(?P<igx>[-\d.]+),(?P<igy>[-\d.]+),(?P<igz>[-\d.]+) "
     r"age_icm_ms=(?P<age>[-\d.]+) mpu_sat=(?P<sat>\d+) "
     r"errors=(?P<i2c>\d+)/(?P<tx>\d+)/(?P<spi>\d+)/(?P<sync>\d+)"
 )
@@ -32,6 +35,7 @@ LINE_RE = re.compile(
 AGE_LIMIT_MS = 30.0
 DELAY_LIMIT_MS = 50.0
 MIN_VALIDATION_CORRELATION = 0.9
+STANDARD_GRAVITY = 9.80665
 
 
 def load_frames(path):
@@ -45,11 +49,13 @@ def load_frames(path):
         raise SystemExit(f"no valid frames found in {path}")
     seq = np.array([int(r["seq"]) for r in rows])
     t = np.array([float(r["t"]) for r in rows])
-    mpu = np.array([[float(r["mgx"]), float(r["mgy"]), float(r["mgz"])] for r in rows])
-    icm = np.array([[float(r["igx"]), float(r["igy"]), float(r["igz"])] for r in rows])
+    mpu_gyro = np.array([[float(r["mgx"]), float(r["mgy"]), float(r["mgz"])] for r in rows])
+    icm_gyro = np.array([[float(r["igx"]), float(r["igy"]), float(r["igz"])] for r in rows])
+    mpu_accel = np.array([[float(r["max"]), float(r["may"]), float(r["maz"])] for r in rows])
+    icm_accel = np.array([[float(r["iax"]), float(r["iay"]), float(r["iaz"])] for r in rows])
     age = np.array([float(r["age"]) for r in rows])
     sat = np.array([int(r["sat"]) for r in rows])
-    return seq, t, mpu, icm, age, sat
+    return seq, t, mpu_gyro, icm_gyro, mpu_accel, icm_accel, age, sat
 
 
 def standardize(values):
@@ -78,7 +84,7 @@ def estimate_delay(t, icm_time, mpu_mag, icm_mag, max_delay, step):
 
 
 def gyro_bias_from_static(path):
-    _, _, mpu, icm, _, _ = load_frames(path)
+    _, _, mpu, icm, _, _, _, _ = load_frames(path)
     return mpu.mean(axis=0), icm.mean(axis=0)
 
 
@@ -107,6 +113,59 @@ def axis_mapping(rotation):
     return lines
 
 
+def segment_static_poses(icm_accel, mpu_gyro, icm_gyro, min_samples=50,
+                         gyro_limit=15.0, min_direction_change_deg=10.0):
+    """Split a multi-pose log: static runs by gyro, merged by gravity direction."""
+    gyro_mag = np.maximum(np.linalg.norm(mpu_gyro, axis=1), np.linalg.norm(icm_gyro, axis=1))
+    runs = []
+    start = None
+    for index in range(len(gyro_mag)):
+        if gyro_mag[index] < gyro_limit and start is None:
+            start = index
+        elif gyro_mag[index] >= gyro_limit and start is not None:
+            if index - start >= min_samples:
+                runs.append((start, index))
+            start = None
+    if start is not None and len(gyro_mag) - start >= min_samples:
+        runs.append((start, len(gyro_mag)))
+
+    poses = []
+    for begin, end in runs:
+        vectors = icm_accel[begin:end]
+        mean_vector = vectors.mean(axis=0)
+        norm = float(np.linalg.norm(mean_vector))
+        if norm < 1e-6:
+            continue
+        direction = mean_vector / norm
+        if poses:
+            previous = poses[-1][2]
+            angle = np.degrees(np.arccos(np.clip(float(np.dot(previous, direction)), -1.0, 1.0)))
+            if angle < min_direction_change_deg:
+                continue
+        poses.append((begin, end, direction))
+    return poses
+
+
+def fit_accel_gravity(pose_icm, rotation, gravity=STANDARD_GRAVITY, regularization=0.01):
+    """Fit the ICM accel bias against the gravity magnitude on static poses.
+
+    The MPU6050 accelerometer is itself biased (constant X/Z offset against the
+    ICM-transformed data), so it is not used as the calibration reference.
+    A weak regularization keeps the bias at the minimum-norm solution.
+    """
+    def residuals(params):
+        bias = params[0:3]
+        out = []
+        for a_icm in pose_icm:
+            predicted = rotation @ (a_icm - bias)
+            out.append(np.linalg.norm(predicted) - gravity)
+        out.extend(np.sqrt(regularization) * bias)
+        return np.array(out)
+
+    solution = least_squares(residuals, np.zeros(3), method="lm")
+    return solution.x, solution
+
+
 def icm_time_of(t, age):
     return t + age / 1000.0
 
@@ -121,9 +180,11 @@ def main():
     parser.add_argument("--static", help="static dual-IMU log for gyro biases")
     parser.add_argument("--validate", help="independent rotation log for validation")
     parser.add_argument("--frame-json", help="save calibration results as JSON")
+    parser.add_argument("--accel-static", help="multi-pose static log for accel calibration")
+    parser.add_argument("--accel-json", help="save accel calibration as JSON")
     args = parser.parse_args()
 
-    seq, t, mpu, icm, age, sat = load_frames(args.logfile)
+    seq, t, mpu, icm, mpu_accel, icm_accel, age, sat = load_frames(args.logfile)
     mpu_mag = np.linalg.norm(mpu, axis=1)
     icm_mag = np.linalg.norm(icm, axis=1)
     icm_time = icm_time_of(t, age)
@@ -173,6 +234,7 @@ def main():
                  peak > corr_zero and age_bad == 0)
 
     frame_pass = None
+    rotation = None
     if args.static:
         bias_mpu, bias_icm = gyro_bias_from_static(args.static)
         aligned = align_icm(t, icm_time, icm, tau)
@@ -200,7 +262,7 @@ def main():
 
         validation = None
         if args.validate:
-            _, t_v, mpu_v, icm_v, age_v, _ = load_frames(args.validate)
+            _, t_v, mpu_v, icm_v, _, _, age_v, _ = load_frames(args.validate)
             icm_time_v = icm_time_of(t_v, age_v)
             mpu_mag_v = np.linalg.norm(mpu_v, axis=1)
             icm_mag_v = np.linalg.norm(icm_v, axis=1)
@@ -243,7 +305,78 @@ def main():
                 json.dump(payload, handle, indent=2, ensure_ascii=False)
             print(f"calibration JSON written to {args.frame_json}")
 
-    passed = time_pass and (frame_pass if frame_pass is not None else True)
+    accel_pass = None
+    if args.accel_static:
+        if rotation is None:
+            raise SystemExit("--accel-static requires --static (gyro frame calibration)")
+        _, _, _, _, mpu_a, icm_a, _, _ = load_frames(args.accel_static)
+        _, _, mpu_g, icm_g, _, _, _, _ = load_frames(args.accel_static)
+        pose_ranges = segment_static_poses(icm_a, mpu_g, icm_g)
+        if len(pose_ranges) < 4:
+            raise SystemExit(f"only {len(pose_ranges)} distinct static poses detected; need at least 4")
+        static_idx = np.concatenate([np.arange(begin, end) for begin, end, _ in pose_ranges])
+        pose_icm = np.array([icm_a[begin:end].mean(axis=0) for begin, end, _ in pose_ranges])
+        pose_mpu = np.array([mpu_a[begin:end].mean(axis=0) for begin, end, _ in pose_ranges])
+
+        bias_a, solution = fit_accel_gravity(pose_icm, rotation)
+        predicted_poses = np.array([rotation @ (a - bias_a) for a in pose_icm])
+        magnitudes = np.linalg.norm(predicted_poses, axis=1)
+        gravity_rmse = float(np.sqrt(((magnitudes - STANDARD_GRAVITY) ** 2).mean()))
+
+        static_pred = np.array([rotation @ (a - bias_a) for a in icm_a[static_idx]])
+        static_mpu = mpu_a[static_idx]
+        corr_x = float(np.corrcoef(predicted_poses[:, 0], pose_mpu[:, 0])[0, 1])
+        corr_z = float(np.corrcoef(predicted_poses[:, 2], pose_mpu[:, 2])[0, 1])
+        slope_x = float(np.polyfit(pose_mpu[:, 0], predicted_poses[:, 0], 1)[0])
+        slope_z = float(np.polyfit(pose_mpu[:, 2], predicted_poses[:, 2], 1)[0])
+        residual = static_pred - static_mpu
+        offset = residual.mean(axis=0)
+        detrended_rmse = np.sqrt(((residual - offset) ** 2).mean(axis=0))
+        y_range = (float(static_pred[:, 1].min()), float(static_pred[:, 1].max()))
+
+        print()
+        print("== accel calibration ==")
+        print(f"poses detected: {len(pose_ranges)} (samples: {[end - begin for begin, end, _ in pose_ranges]})")
+        print(f"icm accel bias (m/s^2): {np.array2string(bias_a, precision=4)}")
+        print(f"per-pose |a_pred| vs g: {np.array2string(magnitudes, precision=3)}")
+        print(f"gravity RMSE: {gravity_rmse:.4f} m/s^2")
+        print(f"pose-mean correlation with MPU: x={corr_x:.5f} z={corr_z:.5f}; "
+              f"slope x={slope_x:.4f} z={slope_z:.4f}")
+        print(f"static mean offset (pred - mpu): {np.array2string(offset, precision=3)} m/s^2 "
+              "(MPU accelerometer bias)")
+        print(f"static detrended RMSE: {np.array2string(detrended_rmse, precision=3)} m/s^2")
+        print(f"reconstructed Y range (static): {y_range[0]:.3f} .. {y_range[1]:.3f} m/s^2")
+        accel_pass = (abs(float(magnitudes.mean()) - STANDARD_GRAVITY) < 0.1 and
+                      corr_x > 0.99 and corr_z > 0.99 and
+                      abs(slope_x - 1.0) < 0.1 and abs(slope_z - 1.0) < 0.1 and
+                      (y_range[1] - y_range[0]) > 1.0)
+
+        if args.accel_json:
+            payload = {
+                "version": 1,
+                "gravity": STANDARD_GRAVITY,
+                "icm_accel_bias_mps2": bias_a.tolist(),
+                "icm_accel_scale": [1.0, 1.0, 1.0],
+                "rotation_icm_to_mpu": rotation.tolist(),
+                "metrics": {
+                    "poses": len(pose_ranges),
+                    "pose_samples": [end - begin for begin, end, _ in pose_ranges],
+                    "gravity_rmse_mps2": gravity_rmse,
+                    "pose_correlation_x": corr_x,
+                    "pose_correlation_z": corr_z,
+                    "pose_slope_x": slope_x,
+                    "pose_slope_z": slope_z,
+                    "mpu_accel_bias_mps2": offset.tolist(),
+                    "detrended_rmse_mps2": detrended_rmse.tolist(),
+                    "reconstructed_y_range_mps2": list(y_range),
+                },
+            }
+            with open(args.accel_json, "w", encoding="utf-8") as handle:
+                json.dump(payload, handle, indent=2, ensure_ascii=False)
+            print(f"accel calibration JSON written to {args.accel_json}")
+
+    passed = time_pass and (frame_pass if frame_pass is not None else True) and \
+        (accel_pass if accel_pass is not None else True)
     print("RESULT: " + ("PASS" if passed else "FAIL"))
     return 0 if passed else 1
 

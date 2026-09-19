@@ -1,0 +1,36 @@
+log=diagnostic_logs/phase4_time_alignment/dual_imu_motion3.log
+frames=1000 duration=19.98 s rate=50.05 Hz
+gyro magnitude: mpu max=188.80 dps, icm max=187.51 dps
+estimated delay tau = +33.00 ms (peak corr 0.9965)
+correlation at tau=0: 0.9458 -> at tau=+33.00 ms: 0.9965
+per-window tau (5.0 s): [+33.50, +32.50, +32.00] ms, spread 1.50 ms
+frames with age>30 ms: 0
+frames marked non-fusable (|tau|>50 ms): 0
+motion present: yes
+fusable frames: 1000/1000
+
+== frame calibration ==
+gyro bias mpu (dps): [ 4.5505  1.358  -0.2912]
+gyro bias icm (dps): [ 0.3497  0.1516 -0.1011]
+rotation icm -> mpu:
+  [+0.00146, +0.99996, +0.00908]
+  [-0.99888, +0.00103, +0.04726]
+  [+0.04725, -0.00914, +0.99884]
+  MPU X <- ICM Y (+1.0000)
+  MPU Y <- ICM X (-0.9989)
+  MPU Z <- ICM Z (+0.9988)
+calibration RMSE (dps): [3.027 3.415 2.029]
+orthogonality error=6.961e-16 determinant=1.000000
+rotation-data covariance condition number=9.41
+
+== accel calibration ==
+poses detected: 4 (samples: [84, 86, 54, 84])
+icm accel bias (m/s^2): [ 0.0362 -0.0413 -0.0044]
+per-pose |a_pred| vs g: [9.8   9.809 9.811 9.807]
+gravity RMSE: 0.0040 m/s^2
+pose-mean correlation with MPU: x=0.99999 z=0.99820; slope x=0.9995 z=0.9839
+static mean offset (pred - mpu): [ -0.24  -18.906   1.118] m/s^2 (MPU accelerometer bias)
+static detrended RMSE: [0.087 2.513 0.235] m/s^2
+reconstructed Y range (static): -3.603 .. 4.174 m/s^2
+accel calibration JSON written to diagnostic_logs/phase6_accel_calibration/accel_calibration.json
+RESULT: PASS
