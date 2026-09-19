@@ -469,6 +469,43 @@ $$
 - ICM 数据超时时不继续使用旧样本。
 - `INVALID` 状态禁止轨迹积分，防止错误数据污染位置。
 
+### 阶段七执行结果（2026-09-19，已完成）
+
+**实现**：新增 `tools/fusion_state.py`：
+
+- `FusionStateMachine` 实现四个状态：`MPU_PRIMARY`、`BLENDED`、`ICM_FALLBACK`、`INVALID`；
+- 输入有效性检查：SPI 成功、样本年龄 ≤30 ms、ICM 加速度不超量程、时延/同步误差 ≤50 ms、标定文件有效；
+- 迟滞逻辑：进入饱和阈值 19.60 m/s²、退出 19.51 m/s²，分别需要连续 5/25 帧；**硬饱和（≥19.612 m/s²，即 raw 32767 削顶）立即降级**，不再等待确认计数，避免削顶数据泄漏到输出；
+- 融合输出：`BLENDED` 用加权（默认 MPU 权重 0.5），`ICM_FALLBACK` 用 ICM 转换后的 Y，`INVALID` 返回空并令 `should_integrate=False`；
+- `transform_icm_accel()` 用阶段五/六的旋转矩阵与零偏把 ICM 加速度映射到 MPU 坐标系；
+- 离线回放：`--log <双传感器日志> --calib <标定 JSON>` 统计状态分布、切换次数与短片段（抖动）。
+
+**自测结果**（`--self-test`，`diagnostic_logs/phase7_fusion_state/self_test_result.txt`）
+
+```text
+band oscillation transitions: 0 (states: ['BLENDED'])
+saturation/recovery transitions: 2 segments: [('BLENDED', 100), ('ICM_FALLBACK', 124), ('BLENDED', 76)]
+timeout frames marked INVALID without output: True
+INVALID integration frozen: True
+BLENDED weight check: state=BLENDED y=7.0000 expected=7.0000
+self-test RESULT: PASS
+```
+
+**真实数据回放**（`replay_result.txt`）
+
+| 日志 | 帧数 | 状态分布 | 切换 | 短片段 |
+|---|---|---|---|---|
+| `phase3_dual_stream/dual_imu_3000.log` | 3000 | 全部 `ICM_FALLBACK` | 0 | 0 |
+| `phase4_time_alignment/dual_imu_motion3.log` | 1000 | 全部 `ICM_FALLBACK` | 0 | 0 |
+
+**结论**
+
+- 三项完成标准全部满足：状态切换无抖动（阈值带内 0 次切换、饱和恢复仅 2 次且无短片段）；ICM 超时帧标记 `INVALID` 且不输出旧样本；`INVALID` 期间轨迹积分冻结；
+- 当前硬件 MPU Y 长期饱和，融合状态稳定停留在 `ICM_FALLBACK`，与阶段六的重建 Y 输出配套；
+- 修复了设计初稿的缺陷：进入确认期间会短暂使用削顶的 MPU Y，改为硬饱和立即降级。
+
+**原始记录**：`diagnostic_logs/phase7_fusion_state/`（`self_test_result.txt`、`replay_result.txt`）。
+
 ## 11. 阶段八：在现有 GUI 上增量改造
 
 ### 强制约束
