@@ -570,6 +570,30 @@ self-test RESULT: PASS
 - GUI 可视化当前是 MPU 数据、加权融合还是 ICM 降级补偿。
 - 开始、停止、清空、再次开始和关闭窗口均通过实机测试。
 
+### 阶段八执行结果（2026-09-19，已完成）
+
+**实现**：在 `gui/app.py` 上增量改造，未新建 GUI：
+
+- 数据模型：`Sample` 保留 `accel`/`gyro` 作为融合输出，新增 `mpu_accel`/`mpu_gyro`/`icm_accel`/`icm_gyro`、`icm_accel_mpu`/`icm_gyro_mpu`、`fusion_state`、`icm_valid`、`icm_age_ms`、`saturation_mask`、双传感器错误计数与温度；
+- 协议解析：`parse_sample()` 解析 `monitor_dual_imu.py` 单行帧（含新增的 `mpu_t`/`icm_t` 温度字段）；
+- 采集线程：只启动一个远程 `monitor_dual_imu.py`；启动前校验 M4 固件与 `/dev/icm20608`，失败时给出明确提示；保留 SSH ControlMaster 复用与远程进程清理；
+- 融合：导入 `tools/fusion_state.py`，逐帧运行状态机；标定文件默认加载 `diagnostic_logs/phase6_accel_calibration/accel_calibration.json`（阶段九再规范化路径）；
+- 图表（3×2）：图1 融合加速度（原始模式叠加 MPU Y 与 ICM→MPU Y）、图2 角速度（原始模式叠加 ICM 对齐数据）、图3 轨迹（仅有效融合加速度积分，`INVALID` 暂停）、图4 姿态（重力校正改用融合加速度）、图5 ICM 角速度、图6 ICM 加速度（原始模式叠加转换结果）；
+- 左侧新增：融合状态彩色标签、ICM 有效性/样本年龄/温度/错误、标定信息（时延、重力 RMSE、验证相关系数）、`显示原始数据` 开关。
+
+**验证结果**
+
+| 测试 | 结果 |
+|---|---|
+| 演示模式（15 s，含周期性 MPU Y 饱和） | 退出码 0，无异常 |
+| 离屏合成序列（静止→饱和→ICM 超时） | 状态计数 `BLENDED 120 / ICM_FALLBACK 100 / INVALID 50`；`INVALID` 期间轨迹位置冻结 |
+| 实机端到端（约 13 s） | 383 帧真实数据，状态全部 `ICM_FALLBACK`，融合 Y=1.54 m/s² 取代饱和的 19.61；ICM 有效、age≈0.45 ms |
+| 处理速率 | 稳态 50.3 Hz（与采集一致，无堆积） |
+| 六图重绘开销 | 约 71 ms/帧（738 帧数据），低于 100 ms 刷新间隔 |
+| 开始→停止→清空→再开始→关闭 | 各阶段样本计数符合预期，无残留进程 |
+
+四项完成标准全部满足。**未实现项**：11.3 中的「开始双传感器标定」按钮与进度条暂未加入 GUI（标定仍通过 `tools/calibrate_dual_imu.py` 离线完成），留待阶段九一并处理。
+
 ## 12. 阶段九：标定参数持久化
 
 建议在项目中保存可审查的 JSON 格式，例如 `config/dual_imu_calibration.json`，包含：
