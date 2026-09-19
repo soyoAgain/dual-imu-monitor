@@ -62,6 +62,7 @@ STATE_COLOR = {
     STATE_ICM_FALLBACK: "#d97706",
     STATE_INVALID: "#dc2626",
 }
+TRAJECTORY_HALF_RANGE_M = 0.05
 
 DUAL_RE = re.compile(
     r"seq=(?P<seq>\d+) t=(?P<t>[\d.]+) "
@@ -411,6 +412,10 @@ class PlotCanvas(FigureCanvasQTAgg):
             axis.grid(True, alpha=0.25); axis.legend(loc="upper right", ncol=3, fontsize=8)
         self.path_ax.set_title("图3　传感器空间轨迹（积分估计）", loc="left", fontsize=10, fontweight="bold")
         self.path_ax.set_xlabel("X / m"); self.path_ax.set_ylabel("Y / m"); self.path_ax.set_zlabel("Z / m")
+        self.path_ax.set_xlim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
+        self.path_ax.set_ylim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
+        self.path_ax.set_zlim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
+        self.path_ax.set_box_aspect((1, 1, 1))
         self.path_ax.text2D(0.99, 0.97, "融合加速度 + 重力补偿 + ZUPT", transform=self.path_ax.transAxes,
                             ha="right", color="#d97706", fontsize=8)
         self._build_attitude_axes()
@@ -504,11 +509,9 @@ class PlotCanvas(FigureCanvasQTAgg):
             self.path_head._offsets3d = (
                 np.array([xyz[-1, 0]]), np.array([xyz[-1, 1]]), np.array([xyz[-1, 2]]),
             )
-            span = max(float(np.ptp(xyz, axis=0).max()), 0.05)
-            center = (xyz.min(axis=0) + xyz.max(axis=0)) / 2
-            self.path_ax.set_xlim(center[0]-span/2, center[0]+span/2)
-            self.path_ax.set_ylim(center[1]-span/2, center[1]+span/2)
-            self.path_ax.set_zlim(center[2]-span/2, center[2]+span/2)
+            self.path_ax.set_xlim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
+            self.path_ax.set_ylim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
+            self.path_ax.set_zlim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
         self.update_attitude(attitude)
         self.draw_idle()
 
