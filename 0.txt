@@ -1,0 +1,33 @@
+screen /dev/cu.usbserial-1140 115200
+
+screen -D -r 30672
+
+ping -c 4 169.254.50.2 && ssh -o ConnectTimeout=5 mp157 'echo ssh_ok'
+
+ssh \
+  -o B -o ConnectTimeout=5 \
+  -o HostKeyAlgorithms=+ssh-rsa \
+  root@169.254.5atchMode=yes \
+ 0.2 \
+  'printf "SSH_OK\n"; uname -a; id'
+
+ssh mp157
+
+sh tools/monitor_rpmsg_imu.sh
+
+
+
+需要你确认三件事：
+1. MPU6050 怎么接：直接插在 F103 板的 ATK 模块接口上吗？如果是，接口丝印/对应引脚是什么（或发我开发板型号丝印，我查资料确认）；如果用杜
+
+
+直接插在 F103 板的 ATK 模块接口上，接口丝印/对应引脚是什么（或发我开发板型号丝印，我查资料确认）；如果用杜邦线，我可以选任意空闲
+
+2. 烧录方式：用 F103 板载 USB 串口 ISP（USB_232 口 + BOOT0 跳线）还是 ST-Link？
+
+用 F103 板载 USB 串口 ISP
+
+3. 串口输出：用 F103 板载 USB 串口接到 Mac，还是用外接 USB-TTL？
+用 F103 板载 USB 串口接到 Mac
+
+另外注意：CH340（/dev/cu.usbserial-1140）现在已从 Mac 上断开，如果你还要用 MP157 的 TTL 控制台，需要插回去。确认上面三点后我就开始写 F103 固件。

@@ -1,0 +1,4 @@
+interface:
+  display_name: "GUI 修改验证"
+  short_description: "Test every GUI change with live MP157 sensor data"
+  default_prompt: "修改 GUI 后禁止使用演示数据，必须连接 MP157 和 MPU6050 测试主要功能。"

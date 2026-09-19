@@ -1,0 +1,10 @@
+PING 169.254.50.2 (169.254.50.2): 56 data bytes
+64 bytes from 169.254.50.2: icmp_seq=0 ttl=64 time=0.652 ms
+64 bytes from 169.254.50.2: icmp_seq=1 ttl=64 time=0.526 ms
+64 bytes from 169.254.50.2: icmp_seq=2 ttl=64 time=0.892 ms
+64 bytes from 169.254.50.2: icmp_seq=3 ttl=64 time=0.656 ms
+64 bytes from 169.254.50.2: icmp_seq=4 ttl=64 time=0.769 ms
+
+--- 169.254.50.2 ping statistics ---
+5 packets transmitted, 5 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 0.526/0.699/0.892/0.123 ms

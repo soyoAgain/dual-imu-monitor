@@ -1,0 +1,17 @@
+# macOS and editor metadata
+.DS_Store
+.vscode/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Runtime artifacts
+*.pid
+screenlog.*
+
+# CMake/Ninja build outputs
+m4/build*/
+
+# Downloaded SDKs and cross-compilers (1.4 GB, reproducible dependencies)
+third_party/

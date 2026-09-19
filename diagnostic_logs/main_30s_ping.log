@@ -1,0 +1,40 @@
+PING 169.254.50.2 (169.254.50.2): 56 data bytes
+64 bytes from 169.254.50.2: icmp_seq=0 ttl=64 time=1.077 ms
+64 bytes from 169.254.50.2: icmp_seq=1 ttl=64 time=0.871 ms
+64 bytes from 169.254.50.2: icmp_seq=2 ttl=64 time=0.913 ms
+64 bytes from 169.254.50.2: icmp_seq=3 ttl=64 time=0.687 ms
+64 bytes from 169.254.50.2: icmp_seq=4 ttl=64 time=0.950 ms
+64 bytes from 169.254.50.2: icmp_seq=5 ttl=64 time=0.860 ms
+64 bytes from 169.254.50.2: icmp_seq=6 ttl=64 time=0.839 ms
+64 bytes from 169.254.50.2: icmp_seq=7 ttl=64 time=0.950 ms
+64 bytes from 169.254.50.2: icmp_seq=8 ttl=64 time=0.604 ms
+64 bytes from 169.254.50.2: icmp_seq=9 ttl=64 time=0.896 ms
+64 bytes from 169.254.50.2: icmp_seq=10 ttl=64 time=0.781 ms
+64 bytes from 169.254.50.2: icmp_seq=11 ttl=64 time=0.942 ms
+64 bytes from 169.254.50.2: icmp_seq=12 ttl=64 time=0.921 ms
+64 bytes from 169.254.50.2: icmp_seq=13 ttl=64 time=0.695 ms
+64 bytes from 169.254.50.2: icmp_seq=14 ttl=64 time=0.871 ms
+64 bytes from 169.254.50.2: icmp_seq=15 ttl=64 time=0.810 ms
+64 bytes from 169.254.50.2: icmp_seq=16 ttl=64 time=0.920 ms
+64 bytes from 169.254.50.2: icmp_seq=17 ttl=64 time=0.879 ms
+64 bytes from 169.254.50.2: icmp_seq=18 ttl=64 time=0.835 ms
+64 bytes from 169.254.50.2: icmp_seq=19 ttl=64 time=0.969 ms
+64 bytes from 169.254.50.2: icmp_seq=20 ttl=64 time=0.860 ms
+64 bytes from 169.254.50.2: icmp_seq=21 ttl=64 time=0.878 ms
+64 bytes from 169.254.50.2: icmp_seq=22 ttl=64 time=0.942 ms
+64 bytes from 169.254.50.2: icmp_seq=23 ttl=64 time=0.800 ms
+64 bytes from 169.254.50.2: icmp_seq=24 ttl=64 time=0.991 ms
+64 bytes from 169.254.50.2: icmp_seq=25 ttl=64 time=0.913 ms
+64 bytes from 169.254.50.2: icmp_seq=26 ttl=64 time=0.850 ms
+64 bytes from 169.254.50.2: icmp_seq=27 ttl=64 time=0.862 ms
+64 bytes from 169.254.50.2: icmp_seq=28 ttl=64 time=0.809 ms
+64 bytes from 169.254.50.2: icmp_seq=29 ttl=64 time=0.780 ms
+64 bytes from 169.254.50.2: icmp_seq=30 ttl=64 time=0.708 ms
+64 bytes from 169.254.50.2: icmp_seq=31 ttl=64 time=0.914 ms
+64 bytes from 169.254.50.2: icmp_seq=32 ttl=64 time=0.875 ms
+64 bytes from 169.254.50.2: icmp_seq=33 ttl=64 time=0.771 ms
+64 bytes from 169.254.50.2: icmp_seq=34 ttl=64 time=0.848 ms
+
+--- 169.254.50.2 ping statistics ---
+35 packets transmitted, 35 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 0.604/0.859/1.077/0.093 ms

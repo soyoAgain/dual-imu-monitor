@@ -1,0 +1,14 @@
+[Unit]
+Description=Dropbear standalone SSH server
+Wants=dropbearkey.service
+After=network.target dropbearkey.service
+Conflicts=dropbear.socket
+
+[Service]
+EnvironmentFile=-/etc/default/dropbear
+ExecStart=/usr/sbin/dropbear -F -E -r /etc/dropbear/dropbear_rsa_host_key $DROPBEAR_EXTRA_ARGS
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

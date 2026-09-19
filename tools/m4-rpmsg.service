@@ -1,0 +1,14 @@
+[Unit]
+Description=Start STM32MP157 M4 MPU6050 RPMsg firmware
+After=local-fs.target systemd-modules-load.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/m4-rpmsg-autostart start
+ExecStop=/usr/local/sbin/m4-rpmsg-autostart stop
+RemainAfterExit=yes
+TimeoutStartSec=30
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

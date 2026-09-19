@@ -1,0 +1,180 @@
+Pinmux settings per pin
+Format: pin (name): mux_owner gpio_owner hog?
+pin 400 (PZ0): 44004000.spi (GPIO UNCLAIMED) function analog group PZ0
+pin 401 (PZ1): 44004000.spi (GPIO UNCLAIMED) function analog group PZ1
+pin 402 (PZ2): 44004000.spi (GPIO UNCLAIMED) function analog group PZ2
+pin 403 (PZ3): (MUX UNCLAIMED) GPIOZ:403
+pin 404 (PZ4): 5c002000.i2c (GPIO UNCLAIMED) function af6 group PZ4
+pin 405 (PZ5): 5c002000.i2c (GPIO UNCLAIMED) function af6 group PZ5
+pin 406 (PZ6): (MUX UNCLAIMED) GPIOZ:406
+pin 407 (PZ7): (MUX UNCLAIMED) GPIOZ:407
+Pinmux settings per pin
+Format: pin (name): mux_owner gpio_owner hog?
+pin 0 (PA0): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 1 (PA1): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PA1
+pin 2 (PA2): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PA2
+pin 3 (PA3): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 4 (PA4): 40017000.dac (GPIO UNCLAIMED) function analog group PA4
+pin 5 (PA5): 48003000.adc (GPIO UNCLAIMED) function analog group PA5
+pin 6 (PA6): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PA6
+pin 7 (PA7): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PA7
+pin 8 (PA8): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 9 (PA9): 4000b000.audio-controller (GPIO UNCLAIMED) function af5 group PA9
+pin 10 (PA10): 44000000.timer:pwm (GPIO UNCLAIMED) function af1 group PA10
+pin 11 (PA11): 40015000.i2c (GPIO UNCLAIMED) function af4 group PA11
+pin 12 (PA12): 40015000.i2c (GPIO UNCLAIMED) function af4 group PA12
+pin 13 (PA13): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 14 (PA14): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 15 (PA15): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 16 (PB0): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PB0
+pin 17 (PB1): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PB1
+pin 18 (PB2): 40010000.serial (GPIO UNCLAIMED) function af8 group PB2
+pin 19 (PB3): 58007000.sdmmc (GPIO UNCLAIMED) function analog group PB3
+pin 20 (PB4): 58007000.sdmmc (GPIO UNCLAIMED) function analog group PB4
+pin 21 (PB5): 50027004.audio-controller (GPIO UNCLAIMED) function af10 group PB5
+pin 22 (PB6): 40016000.cec (GPIO UNCLAIMED) function af5 group PB6
+pin 23 (PB7): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PB7
+pin 24 (PB8): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PB8
+pin 25 (PB9): 4000b000.audio-controller (GPIO UNCLAIMED) function af5 group PB9
+pin 26 (PB10): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 27 (PB11): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PB11
+pin 28 (PB12): 40011000.serial (GPIO UNCLAIMED) function af14 group PB12
+pin 29 (PB13): 40011000.serial (GPIO UNCLAIMED) function af14 group PB13
+pin 30 (PB14): 58007000.sdmmc (GPIO UNCLAIMED) function analog group PB14
+pin 31 (PB15): 58007000.sdmmc (GPIO UNCLAIMED) function analog group PB15
+pin 32 (PC0): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 33 (PC1): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PC1
+pin 34 (PC2): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PC2
+pin 35 (PC3): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 36 (PC4): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PC4
+pin 37 (PC5): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PC5
+pin 38 (PC6): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 39 (PC7): (MUX UNCLAIMED) GPIOC:39
+pin 40 (PC8): 58005000.sdmmc (GPIO UNCLAIMED) function analog group PC8
+pin 41 (PC9): 58005000.sdmmc (GPIO UNCLAIMED) function analog group PC9
+pin 42 (PC10): 58005000.sdmmc (GPIO UNCLAIMED) function analog group PC10
+pin 43 (PC11): 58005000.sdmmc (GPIO UNCLAIMED) function analog group PC11
+pin 44 (PC12): 58005000.sdmmc (GPIO UNCLAIMED) function analog group PC12
+pin 45 (PC13): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 46 (PC14): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 47 (PC15): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 48 (PD0): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 49 (PD1): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 50 (PD2): 58005000.sdmmc (GPIO UNCLAIMED) function analog group PD2
+pin 51 (PD3): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 52 (PD4): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 53 (PD5): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 54 (PD6): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 55 (PD7): 48004000.sdmmc (GPIO UNCLAIMED) function af10 group PD7
+pin 56 (PD8): 4000f000.serial (GPIO UNCLAIMED) function af7 group PD8
+pin 57 (PD9): 4000f000.serial (GPIO UNCLAIMED) function af7 group PD9
+pin 58 (PD10): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 59 (PD11): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 60 (PD12): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 61 (PD13): 40002000.timer:pwm (GPIO UNCLAIMED) function af2 group PD13
+pin 62 (PD14): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 63 (PD15): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 64 (PE0): 4400b000.sai (GPIO UNCLAIMED) function af10 group PE0
+pin 65 (PE1): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 66 (PE2): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PE2
+pin 67 (PE3): 58007000.sdmmc (GPIO UNCLAIMED) function analog group PE3
+pin 68 (PE4): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 69 (PE5): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 70 (PE6): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PE6
+pin 71 (PE7): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 72 (PE8): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 73 (PE9): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 74 (PE10): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 75 (PE11): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 76 (PE12): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 77 (PE13): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 78 (PE14): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 79 (PE15): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 80 (PF0): 48004000.sdmmc (GPIO UNCLAIMED) function af9 group PF0
+pin 81 (PF1): 48004000.sdmmc (GPIO UNCLAIMED) function af9 group PF1
+pin 82 (PF2): (MUX UNCLAIMED) GPIOF:82
+pin 83 (PF3): (MUX UNCLAIMED) GPIOF:83
+pin 84 (PF4): 48004000.sdmmc (GPIO UNCLAIMED) function af9 group PF4
+pin 85 (PF5): 48004000.sdmmc (GPIO UNCLAIMED) function af9 group PF5
+pin 86 (PF6): 40018000.serial (GPIO UNCLAIMED) function af7 group PF6
+pin 87 (PF7): 40018000.serial (GPIO UNCLAIMED) function af7 group PF7
+pin 88 (PF8): 40018000.serial (GPIO UNCLAIMED) function af7 group PF8
+pin 89 (PF9): 40018000.serial (GPIO UNCLAIMED) function af7 group PF9
+pin 90 (PF10): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 91 (PF11): 4400b000.sai (GPIO UNCLAIMED) function af10 group PF11
+pin 92 (PF12): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 93 (PF13): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 94 (PF14): 40012000.i2c (GPIO UNCLAIMED) function af5 group PF14
+pin 95 (PF15): 40012000.i2c (GPIO UNCLAIMED) function af5 group PF15
+pin 96 (PG0): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 97 (PG1): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 98 (PG2): 0-0022 GPIOG:98 function analog group PG2
+pin 99 (PG3): (MUX UNCLAIMED) GPIOG:99
+pin 100 (PG4): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PG4
+pin 101 (PG5): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PG5
+pin 102 (PG6): 58007000.sdmmc (GPIO UNCLAIMED) function analog group PG6
+pin 103 (PG7): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 104 (PG8): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 105 (PG9): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 106 (PG10): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 107 (PG11): 40010000.serial (GPIO UNCLAIMED) function af6 group PG11
+pin 108 (PG12): 4000d000.audio-controller (GPIO UNCLAIMED) function af8 group PG12
+pin 109 (PG13): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PG13
+pin 110 (PG14): 5800a000.ethernet (GPIO UNCLAIMED) function af11 group PG14
+pin 111 (PG15): 48004000.sdmmc (GPIO UNCLAIMED) function af10 group PG15
+pin 112 (PH0): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 113 (PH1): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 114 (PH2): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 115 (PH3): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 116 (PH4): 40013000.i2c (GPIO UNCLAIMED) function af4 group PH4
+pin 117 (PH5): 40013000.i2c (GPIO UNCLAIMED) function af4 group PH5
+pin 118 (PH6): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 119 (PH7): (MUX UNCLAIMED) GPIOH:119
+pin 120 (PH8): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PH8
+pin 121 (PH9): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PH9
+pin 122 (PH10): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PH10
+pin 123 (PH11): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PH11
+pin 124 (PH12): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PH12
+pin 125 (PH13): 4400e000.can (GPIO UNCLAIMED) function af9 group PH13
+pin 126 (PH14): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PH14
+pin 127 (PH15): (MUX UNCLAIMED) GPIOH:127
+pin 128 (PI0): (MUX UNCLAIMED) GPIOI:128
+pin 129 (PI1): (MUX UNCLAIMED) GPIOI:129
+pin 130 (PI2): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 131 (PI3): 4000b000.audio-controller (GPIO UNCLAIMED) function af5 group PI3
+pin 132 (PI4): 4c006000.dcmi (GPIO UNCLAIMED) function af13 group PI4
+pin 133 (PI5): 4400b000.sai (GPIO UNCLAIMED) function af10 group PI5
+pin 134 (PI6): 4400b000.sai (GPIO UNCLAIMED) function af10 group PI6
+pin 135 (PI7): 4400b000.sai (GPIO UNCLAIMED) function af10 group PI7
+pin 136 (PI8): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 137 (PI9): 4400e000.can (GPIO UNCLAIMED) function af9 group PI9
+pin 138 (PI10): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 139 (PI11): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 140 (PI12): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PI12
+pin 141 (PI13): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PI13
+pin 142 (PI14): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PI14
+pin 143 (PI15): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PI15
+pin 144 (PJ0): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ0
+pin 145 (PJ1): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ1
+pin 146 (PJ2): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ2
+pin 147 (PJ3): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ3
+pin 148 (PJ4): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ4
+pin 149 (PJ5): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ5
+pin 150 (PJ6): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ6
+pin 151 (PJ7): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ7
+pin 152 (PJ8): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ8
+pin 153 (PJ9): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ9
+pin 154 (PJ10): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ10
+pin 155 (PJ11): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ11
+pin 156 (PJ12): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ12
+pin 157 (PJ13): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ13
+pin 158 (PJ14): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ14
+pin 159 (PJ15): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PJ15
+pin 160 (PK0): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PK0
+pin 161 (PK1): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PK1
+pin 162 (PK2): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PK2
+pin 163 (PK3): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PK3
+pin 164 (PK4): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PK4
+pin 165 (PK5): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PK5
+pin 166 (PK6): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PK6
+pin 167 (PK7): 5a001000.display-controller (GPIO UNCLAIMED) function af14 group PK7
