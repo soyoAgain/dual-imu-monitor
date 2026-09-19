@@ -318,6 +318,49 @@ $$
 - 旋转矩阵通过正交性与行列式检查。
 - 使用独立的真实运动数据进行验证，不只在标定数据上评估。
 
+### 阶段五执行结果（2026-09-19，已完成）
+
+**实现**：扩展 `tools/calibrate_dual_imu.py`：
+
+- `--static <log>`：从静止日志估计两路陀螺零偏；
+- 对时间对齐后的 ICM 角速度逐轴插值到 MPU 时间栅格，扣除零偏后求解 Kabsch/Wahba 问题（SVD + `det(R)=+1` 修正）；
+- 输出旋转矩阵、轴向对应、三轴 RMSE、正交误差、行列式、旋转数据协方差条件数；
+- `--validate <log>`：在独立转动数据上重新估计时延并计算逐轴相关系数与 RMSE；
+- `--frame-json <path>`：保存零偏、时延、旋转矩阵与质量指标。
+
+**数据**：静止 500 帧（零偏）、阶段四转动日志 1000 帧（标定）、独立转动日志 1000 帧（验证）。
+
+**结果**
+
+```text
+gyro bias mpu (dps): [ 4.5505  1.358  -0.2912]
+gyro bias icm (dps): [ 0.3497  0.1516 -0.1011]
+rotation icm -> mpu:
+  [+0.00146, +0.99996, +0.00908]
+  [-0.99888, +0.00103, +0.04726]
+  [+0.04725, -0.00914, +0.99884]
+  MPU X <- ICM Y (+1.0000)
+  MPU Y <- ICM X (-0.9989)
+  MPU Z <- ICM Z (+0.9988)
+calibration RMSE (dps): [3.027 3.415 2.029]
+orthogonality error=6.961e-16  determinant=1.000000  condition number=9.41
+
+== validation on independent log ==
+validation tau = +34.00 ms (peak corr 0.9976, at 0 0.9668)
+per-axis correlation: [0.9978 0.9977 0.9954]
+per-axis RMSE (dps): [3.288 3.048 2.206]
+RESULT: PASS
+```
+
+**解读**
+
+- 两芯片为绕 Z 轴的近似 90° 安装：MPU X 对应 ICM Y，MPU Y 对应 ICM −X，MPU Z 与 ICM Z 同向，矩阵接近正交置换；
+- 标定与验证的时延一致（33.0 / 34.0 ms），说明时间对齐稳定；
+- 独立验证三轴相关 0.995～0.998、RMSE 2.2～3.3 dps，旋转矩阵可靠；
+- 三项完成标准全部满足。标定结果 JSON 暂存于 `diagnostic_logs/phase5_frame_calibration/frame_calibration.json`，阶段九再规范化为 `config/dual_imu_calibration.json`。
+
+**原始记录**：`diagnostic_logs/phase5_frame_calibration/`（静止日志、验证日志、`frame_calibration_result.txt`、`frame_calibration.json`）。
+
 ## 9. 阶段六：加速度零偏、比例与 Y 轴重建
 
 ICM20608 加速度先扣除零偏，再转换到 MPU/线圈坐标系：
