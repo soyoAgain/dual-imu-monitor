@@ -1,0 +1,14 @@
+[Unit]
+Description=Load ATK ICM20608 kernel module
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/icm20608-load start
+ExecStop=/usr/local/sbin/icm20608-load stop
+RemainAfterExit=yes
+TimeoutStartSec=20
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target
