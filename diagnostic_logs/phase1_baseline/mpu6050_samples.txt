@@ -1,0 +1,140 @@
+Monitoring /dev/ttyRPMSG0; press Ctrl+C to stop.
+seq=      8293  t=    165880 ms    0.00 Hz  accel=(  -218, 32767, 14554)  gyro=(   613,   168,   -45)  temp_raw= -3103  errors(i2c/tx)=13/0
+seq=      8295  t=    165920 ms   50.00 Hz  accel=(  -242, 32767, 14466)  gyro=(   614,   169,   -33)  temp_raw= -3100  errors(i2c/tx)=13/0
+seq=      8296  t=    165940 ms   50.00 Hz  accel=(  -230, 32767, 14560)  gyro=(   623,   169,   -35)  temp_raw= -3099  errors(i2c/tx)=13/0
+seq=      8298  t=    165980 ms   50.00 Hz  accel=(  -254, 32767, 14504)  gyro=(   594,   169,   -35)  temp_raw= -3098  errors(i2c/tx)=13/0
+seq=      8299  t=    166000 ms   50.00 Hz  accel=(  -216, 32767, 14586)  gyro=(   612,   187,   -40)  temp_raw= -3099  errors(i2c/tx)=13/0
+seq=      8300  t=    166020 ms   50.00 Hz  accel=(  -254, 32767, 14644)  gyro=(   618,   177,   -48)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8301  t=    166040 ms   50.00 Hz  accel=(  -216, 32767, 14572)  gyro=(   605,   180,   -38)  temp_raw= -3098  errors(i2c/tx)=13/0
+seq=      8303  t=    166080 ms   50.00 Hz  accel=(  -232, 32767, 14602)  gyro=(   604,   174,   -41)  temp_raw= -3094  errors(i2c/tx)=13/0
+seq=      8304  t=    166100 ms   50.00 Hz  accel=(  -216, 32767, 14604)  gyro=(   613,   172,   -35)  temp_raw= -3098  errors(i2c/tx)=13/0
+seq=      8306  t=    166140 ms   50.00 Hz  accel=(  -192, 32767, 14520)  gyro=(   612,   175,   -44)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8307  t=    166160 ms   50.00 Hz  accel=(  -244, 32767, 14550)  gyro=(   608,   182,   -37)  temp_raw= -3099  errors(i2c/tx)=13/0
+seq=      8309  t=    166200 ms   50.00 Hz  accel=(  -240, 32767, 14596)  gyro=(   598,   175,   -45)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8310  t=    166220 ms   50.00 Hz  accel=(  -176, 32767, 14528)  gyro=(   602,   176,   -38)  temp_raw= -3097  errors(i2c/tx)=13/0
+seq=      8312  t=    166260 ms   50.00 Hz  accel=(  -260, 32767, 14622)  gyro=(   600,   174,   -38)  temp_raw= -3106  errors(i2c/tx)=13/0
+seq=      8313  t=    166280 ms   50.00 Hz  accel=(  -188, 32767, 14566)  gyro=(   603,   178,   -36)  temp_raw= -3111  errors(i2c/tx)=13/0
+seq=      8315  t=    166320 ms   50.00 Hz  accel=(  -232, 32767, 14584)  gyro=(   603,   180,   -44)  temp_raw= -3104  errors(i2c/tx)=13/0
+seq=      8316  t=    166340 ms   50.00 Hz  accel=(  -196, 32767, 14574)  gyro=(   603,   178,   -43)  temp_raw= -3098  errors(i2c/tx)=13/0
+seq=      8317  t=    166360 ms   50.00 Hz  accel=(  -192, 32767, 14542)  gyro=(   597,   177,   -39)  temp_raw= -3094  errors(i2c/tx)=13/0
+seq=      8319  t=    166400 ms   50.00 Hz  accel=(  -200, 32767, 14554)  gyro=(   612,   177,   -40)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8320  t=    166420 ms   50.00 Hz  accel=(  -234, 32767, 14532)  gyro=(   619,   178,   -41)  temp_raw= -3101  errors(i2c/tx)=13/0
+seq=      8321  t=    166440 ms   50.00 Hz  accel=(  -254, 32767, 14586)  gyro=(   607,   177,   -50)  temp_raw= -3103  errors(i2c/tx)=13/0
+seq=      8323  t=    166480 ms   50.00 Hz  accel=(  -238, 32767, 14524)  gyro=(   602,   173,   -38)  temp_raw= -3104  errors(i2c/tx)=13/0
+seq=      8324  t=    166500 ms   50.00 Hz  accel=(  -232, 32767, 14582)  gyro=(   602,   176,   -34)  temp_raw= -3099  errors(i2c/tx)=13/0
+seq=      8325  t=    166520 ms   50.00 Hz  accel=(  -218, 32767, 14518)  gyro=(   611,   183,   -38)  temp_raw= -3104  errors(i2c/tx)=13/0
+seq=      8326  t=    166540 ms   50.00 Hz  accel=(  -244, 32767, 14530)  gyro=(   603,   184,   -37)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8328  t=    166580 ms   50.00 Hz  accel=(  -238, 32767, 14592)  gyro=(   604,   175,   -40)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8329  t=    166600 ms   50.00 Hz  accel=(  -188, 32767, 14532)  gyro=(   607,   173,   -37)  temp_raw= -3106  errors(i2c/tx)=13/0
+seq=      8331  t=    166640 ms   50.00 Hz  accel=(  -214, 32767, 14602)  gyro=(   613,   176,   -41)  temp_raw= -3103  errors(i2c/tx)=13/0
+seq=      8332  t=    166660 ms   50.00 Hz  accel=(  -240, 32767, 14518)  gyro=(   617,   168,   -42)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8334  t=    166700 ms   50.00 Hz  accel=(  -226, 32767, 14544)  gyro=(   613,   172,   -38)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8335  t=    166720 ms   50.00 Hz  accel=(  -220, 32767, 14492)  gyro=(   605,   180,   -36)  temp_raw= -3100  errors(i2c/tx)=13/0
+seq=      8336  t=    166740 ms   50.00 Hz  accel=(  -266, 32767, 14560)  gyro=(   608,   177,   -41)  temp_raw= -3101  errors(i2c/tx)=13/0
+seq=      8338  t=    166780 ms   50.00 Hz  accel=(  -222, 32767, 14554)  gyro=(   608,   174,   -39)  temp_raw= -3101  errors(i2c/tx)=13/0
+seq=      8339  t=    166800 ms   50.00 Hz  accel=(  -230, 32767, 14528)  gyro=(   612,   172,   -37)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8340  t=    166820 ms   50.00 Hz  accel=(  -206, 32767, 14632)  gyro=(   617,   168,   -38)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8342  t=    166860 ms   50.00 Hz  accel=(  -214, 32767, 14518)  gyro=(   625,   169,   -41)  temp_raw= -3107  errors(i2c/tx)=13/0
+seq=      8343  t=    166880 ms   50.00 Hz  accel=(  -234, 32767, 14560)  gyro=(   625,   172,   -41)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8344  t=    166900 ms   50.00 Hz  accel=(  -264, 32767, 14544)  gyro=(   617,   178,   -44)  temp_raw= -3107  errors(i2c/tx)=13/0
+seq=      8346  t=    166940 ms   50.00 Hz  accel=(  -204, 32767, 14584)  gyro=(   608,   168,   -41)  temp_raw= -3099  errors(i2c/tx)=13/0
+seq=      8347  t=    166960 ms   50.00 Hz  accel=(  -238, 32767, 14566)  gyro=(   613,   184,   -39)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8349  t=    167000 ms   50.00 Hz  accel=(  -188, 32767, 14574)  gyro=(   612,   170,   -42)  temp_raw= -3103  errors(i2c/tx)=13/0
+seq=      8350  t=    167020 ms   50.00 Hz  accel=(  -216, 32767, 14458)  gyro=(   617,   177,   -37)  temp_raw= -3106  errors(i2c/tx)=13/0
+seq=      8352  t=    167060 ms   50.00 Hz  accel=(  -268, 32767, 14536)  gyro=(   616,   180,   -40)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8353  t=    167080 ms   50.00 Hz  accel=(  -262, 32767, 14510)  gyro=(   606,   173,   -40)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8355  t=    167120 ms   50.00 Hz  accel=(  -238, 32767, 14564)  gyro=(   619,   178,   -40)  temp_raw= -3106  errors(i2c/tx)=13/0
+seq=      8356  t=    167140 ms   50.00 Hz  accel=(  -202, 32767, 14602)  gyro=(   612,   175,   -41)  temp_raw= -3106  errors(i2c/tx)=13/0
+seq=      8357  t=    167160 ms   50.00 Hz  accel=(  -188, 32767, 14624)  gyro=(   615,   179,   -40)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8359  t=    167200 ms   50.00 Hz  accel=(  -196, 32767, 14482)  gyro=(   615,   170,   -41)  temp_raw= -3106  errors(i2c/tx)=13/0
+seq=      8360  t=    167220 ms   50.00 Hz  accel=(  -198, 32767, 14530)  gyro=(   607,   178,   -41)  temp_raw= -3106  errors(i2c/tx)=13/0
+seq=      8361  t=    167240 ms   50.00 Hz  accel=(  -192, 32767, 14556)  gyro=(   609,   184,   -36)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8362  t=    167260 ms   50.00 Hz  accel=(  -254, 32767, 14544)  gyro=(   609,   177,   -40)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8363  t=    167280 ms   50.00 Hz  accel=(  -238, 32767, 14598)  gyro=(   598,   171,   -39)  temp_raw= -3100  errors(i2c/tx)=13/0
+seq=      8365  t=    167320 ms   50.00 Hz  accel=(  -222, 32767, 14568)  gyro=(   609,   182,   -43)  temp_raw= -3102  errors(i2c/tx)=13/0
+seq=      8366  t=    167340 ms   50.00 Hz  accel=(  -250, 32767, 14558)  gyro=(   615,   180,   -37)  temp_raw= -3101  errors(i2c/tx)=13/0
+seq=      8368  t=    167380 ms   50.00 Hz  accel=(  -270, 32767, 14516)  gyro=(   602,   173,   -38)  temp_raw= -3101  errors(i2c/tx)=13/0
+seq=      8369  t=    167400 ms   50.00 Hz  accel=(  -258, 32767, 14528)  gyro=(   607,   181,   -37)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8371  t=    167440 ms   50.00 Hz  accel=(  -236, 32767, 14570)  gyro=(   597,   179,   -40)  temp_raw= -3108  errors(i2c/tx)=13/0
+seq=      8372  t=    167460 ms   50.00 Hz  accel=(  -218, 32767, 14600)  gyro=(   600,   181,   -34)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8374  t=    167500 ms   50.00 Hz  accel=(  -256, 32767, 14520)  gyro=(   604,   186,   -37)  temp_raw= -3106  errors(i2c/tx)=13/0
+seq=      8375  t=    167520 ms   50.00 Hz  accel=(  -254, 32767, 14608)  gyro=(   597,   183,   -42)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8377  t=    167560 ms   50.00 Hz  accel=(  -262, 32767, 14484)  gyro=(   606,   183,   -44)  temp_raw= -3101  errors(i2c/tx)=13/0
+seq=      8378  t=    167580 ms   50.00 Hz  accel=(  -222, 32767, 14702)  gyro=(   604,   174,   -44)  temp_raw= -3108  errors(i2c/tx)=13/0
+seq=      8380  t=    167620 ms   50.00 Hz  accel=(  -218, 32767, 14578)  gyro=(   613,   174,   -35)  temp_raw= -3113  errors(i2c/tx)=13/0
+seq=      8381  t=    167640 ms   50.00 Hz  accel=(  -200, 32767, 14520)  gyro=(   604,   176,   -41)  temp_raw= -3104  errors(i2c/tx)=13/0
+seq=      8382  t=    167660 ms   50.00 Hz  accel=(  -256, 32767, 14558)  gyro=(   613,   181,   -36)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8383  t=    167680 ms   50.00 Hz  accel=(  -230, 32767, 14526)  gyro=(   614,   176,   -40)  temp_raw= -3107  errors(i2c/tx)=13/0
+seq=      8385  t=    167720 ms   50.00 Hz  accel=(  -240, 32767, 14628)  gyro=(   600,   189,   -41)  temp_raw= -3110  errors(i2c/tx)=13/0
+seq=      8386  t=    167740 ms   50.00 Hz  accel=(  -248, 32767, 14618)  gyro=(   613,   177,   -42)  temp_raw= -3108  errors(i2c/tx)=13/0
+seq=      8388  t=    167780 ms   50.00 Hz  accel=(  -210, 32767, 14582)  gyro=(   614,   172,   -34)  temp_raw= -3108  errors(i2c/tx)=13/0
+seq=      8389  t=    167800 ms   50.00 Hz  accel=(  -198, 32767, 14536)  gyro=(   616,   178,   -45)  temp_raw= -3108  errors(i2c/tx)=13/0
+seq=      8391  t=    167840 ms   50.00 Hz  accel=(  -234, 32767, 14634)  gyro=(   602,   179,   -44)  temp_raw= -3114  errors(i2c/tx)=13/0
+seq=      8392  t=    167860 ms   50.00 Hz  accel=(  -246, 32767, 14578)  gyro=(   613,   173,   -44)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8393  t=    167880 ms   50.00 Hz  accel=(  -192, 32767, 14538)  gyro=(   624,   172,   -37)  temp_raw= -3107  errors(i2c/tx)=13/0
+seq=      8394  t=    167900 ms   50.00 Hz  accel=(  -228, 32767, 14568)  gyro=(   625,   172,   -35)  temp_raw= -3108  errors(i2c/tx)=13/0
+seq=      8396  t=    167940 ms   50.00 Hz  accel=(  -210, 32767, 14582)  gyro=(   620,   169,   -32)  temp_raw= -3112  errors(i2c/tx)=13/0
+seq=      8397  t=    167960 ms   50.00 Hz  accel=(  -252, 32767, 14518)  gyro=(   620,   181,   -36)  temp_raw= -3103  errors(i2c/tx)=13/0
+seq=      8398  t=    167980 ms   50.00 Hz  accel=(  -182, 32767, 14612)  gyro=(   621,   175,   -42)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8400  t=    168020 ms   50.00 Hz  accel=(  -250, 32767, 14548)  gyro=(   608,   177,   -45)  temp_raw= -3108  errors(i2c/tx)=13/0
+seq=      8401  t=    168040 ms   50.00 Hz  accel=(  -184, 32767, 14534)  gyro=(   615,   179,   -46)  temp_raw= -3107  errors(i2c/tx)=13/0
+seq=      8403  t=    168080 ms   50.00 Hz  accel=(  -230, 32767, 14602)  gyro=(   617,   174,   -40)  temp_raw= -3111  errors(i2c/tx)=13/0
+seq=      8404  t=    168100 ms   50.00 Hz  accel=(  -222, 32767, 14532)  gyro=(   624,   175,   -45)  temp_raw= -3111  errors(i2c/tx)=13/0
+seq=      8406  t=    168140 ms   50.00 Hz  accel=(  -212, 32767, 14484)  gyro=(   607,   175,   -40)  temp_raw= -3107  errors(i2c/tx)=13/0
+seq=      8407  t=    168160 ms   50.00 Hz  accel=(  -184, 32767, 14578)  gyro=(   612,   175,   -36)  temp_raw= -3107  errors(i2c/tx)=13/0
+seq=      8409  t=    168200 ms   50.00 Hz  accel=(  -262, 32767, 14576)  gyro=(   613,   176,   -48)  temp_raw= -3105  errors(i2c/tx)=13/0
+seq=      8410  t=    168220 ms   50.00 Hz  accel=(  -220, 32767, 14538)  gyro=(   618,   172,   -41)  temp_raw= -3110  errors(i2c/tx)=13/0
+seq=      8411  t=    168240 ms   50.00 Hz  accel=(  -238, 32767, 14452)  gyro=(   612,   175,   -41)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8412  t=    168260 ms   50.00 Hz  accel=(  -238, 32767, 14584)  gyro=(   606,   177,   -38)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8413  t=    168280 ms   50.00 Hz  accel=(  -232, 32767, 14570)  gyro=(   614,   180,   -44)  temp_raw= -3113  errors(i2c/tx)=13/0
+seq=      8415  t=    168320 ms   50.00 Hz  accel=(  -236, 32767, 14590)  gyro=(   616,   180,   -40)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8416  t=    168340 ms   50.00 Hz  accel=(  -256, 32767, 14578)  gyro=(   618,   182,   -40)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8417  t=    168360 ms   50.00 Hz  accel=(  -164, 32767, 14568)  gyro=(   612,   174,   -40)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8419  t=    168400 ms   50.00 Hz  accel=(  -234, 32767, 14558)  gyro=(   613,   174,   -43)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8420  t=    168420 ms   50.00 Hz  accel=(  -184, 32767, 14584)  gyro=(   604,   173,   -41)  temp_raw= -3111  errors(i2c/tx)=13/0
+seq=      8421  t=    168440 ms   50.00 Hz  accel=(  -178, 32767, 14478)  gyro=(   609,   181,   -41)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8423  t=    168480 ms   50.00 Hz  accel=(  -236, 32767, 14528)  gyro=(   611,   185,   -37)  temp_raw= -3112  errors(i2c/tx)=13/0
+seq=      8424  t=    168500 ms   50.00 Hz  accel=(  -154, 32767, 14570)  gyro=(   599,   180,   -42)  temp_raw= -3111  errors(i2c/tx)=13/0
+seq=      8426  t=    168540 ms   50.00 Hz  accel=(  -204, 32767, 14580)  gyro=(   608,   177,   -44)  temp_raw= -3113  errors(i2c/tx)=13/0
+seq=      8427  t=    168560 ms   50.00 Hz  accel=(  -204, 32767, 14614)  gyro=(   605,   169,   -39)  temp_raw= -3112  errors(i2c/tx)=13/0
+seq=      8429  t=    168600 ms   50.00 Hz  accel=(  -240, 32767, 14588)  gyro=(   609,   171,   -37)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8430  t=    168620 ms   50.00 Hz  accel=(  -212, 32767, 14640)  gyro=(   594,   177,   -41)  temp_raw= -3106  errors(i2c/tx)=13/0
+seq=      8431  t=    168640 ms   50.00 Hz  accel=(  -200, 32767, 14566)  gyro=(   610,   176,   -41)  temp_raw= -3113  errors(i2c/tx)=13/0
+seq=      8433  t=    168680 ms   50.00 Hz  accel=(  -226, 32767, 14466)  gyro=(   616,   177,   -39)  temp_raw= -3110  errors(i2c/tx)=13/0
+seq=      8434  t=    168700 ms   50.00 Hz  accel=(  -202, 32767, 14560)  gyro=(   607,   178,   -41)  temp_raw= -3112  errors(i2c/tx)=13/0
+seq=      8435  t=    168720 ms   50.00 Hz  accel=(  -236, 32767, 14590)  gyro=(   617,   179,   -43)  temp_raw= -3112  errors(i2c/tx)=13/0
+seq=      8437  t=    168760 ms   50.00 Hz  accel=(  -216, 32767, 14512)  gyro=(   607,   169,   -43)  temp_raw= -3111  errors(i2c/tx)=13/0
+seq=      8438  t=    168780 ms   50.00 Hz  accel=(  -218, 32767, 14502)  gyro=(   607,   173,   -40)  temp_raw= -3109  errors(i2c/tx)=13/0
+seq=      8440  t=    168820 ms   50.00 Hz  accel=(  -242, 32767, 14554)  gyro=(   605,   175,   -35)  temp_raw= -3108  errors(i2c/tx)=13/0
+seq=      8441  t=    168840 ms   50.00 Hz  accel=(  -248, 32767, 14578)  gyro=(   602,   175,   -36)  temp_raw= -3111  errors(i2c/tx)=13/0
+seq=      8442  t=    168860 ms   50.00 Hz  accel=(  -180, 32767, 14560)  gyro=(   605,   178,   -38)  temp_raw= -3115  errors(i2c/tx)=13/0
+seq=      8444  t=    168900 ms   50.00 Hz  accel=(  -248, 32767, 14600)  gyro=(   607,   179,   -43)  temp_raw= -3119  errors(i2c/tx)=13/0
+seq=      8445  t=    168920 ms   50.00 Hz  accel=(  -230, 32767, 14550)  gyro=(   600,   181,   -40)  temp_raw= -3120  errors(i2c/tx)=13/0
+seq=      8446  t=    168940 ms   50.00 Hz  accel=(  -226, 32767, 14582)  gyro=(   608,   180,   -40)  temp_raw= -3120  errors(i2c/tx)=13/0
+seq=      8447  t=    168960 ms   50.00 Hz  accel=(  -200, 32767, 14578)  gyro=(   603,   177,   -40)  temp_raw= -3120  errors(i2c/tx)=13/0
+seq=      8449  t=    169000 ms   50.00 Hz  accel=(  -226, 32767, 14592)  gyro=(   605,   181,   -39)  temp_raw= -3119  errors(i2c/tx)=13/0
+seq=      8450  t=    169020 ms   50.00 Hz  accel=(  -192, 32767, 14546)  gyro=(   609,   177,   -44)  temp_raw= -3118  errors(i2c/tx)=13/0
+seq=      8452  t=    169060 ms   50.00 Hz  accel=(  -190, 32767, 14508)  gyro=(   614,   177,   -43)  temp_raw= -3111  errors(i2c/tx)=13/0
+seq=      8453  t=    169080 ms   50.00 Hz  accel=(  -238, 32767, 14566)  gyro=(   611,   178,   -35)  temp_raw= -3120  errors(i2c/tx)=13/0
+seq=      8454  t=    169100 ms   50.00 Hz  accel=(  -208, 32767, 14538)  gyro=(   611,   176,   -43)  temp_raw= -3115  errors(i2c/tx)=13/0
+seq=      8456  t=    169140 ms   50.00 Hz  accel=(  -250, 32767, 14550)  gyro=(   603,   185,   -42)  temp_raw= -3118  errors(i2c/tx)=13/0
+seq=      8457  t=    169160 ms   50.00 Hz  accel=(  -238, 32767, 14556)  gyro=(   601,   175,   -43)  temp_raw= -3114  errors(i2c/tx)=13/0
+seq=      8459  t=    169200 ms   50.00 Hz  accel=(  -198, 32767, 14562)  gyro=(   604,   178,   -37)  temp_raw= -3113  errors(i2c/tx)=13/0
+seq=      8460  t=    169220 ms   50.00 Hz  accel=(  -234, 32767, 14560)  gyro=(   601,   184,   -34)  temp_raw= -3117  errors(i2c/tx)=13/0
+seq=      8462  t=    169260 ms   50.00 Hz  accel=(  -290, 32767, 14598)  gyro=(   599,   175,   -37)  temp_raw= -3114  errors(i2c/tx)=13/0
+seq=      8463  t=    169280 ms   50.00 Hz  accel=(  -248, 32767, 14564)  gyro=(   601,   168,   -38)  temp_raw= -3113  errors(i2c/tx)=13/0
+seq=      8465  t=    169320 ms   50.00 Hz  accel=(  -218, 32767, 14566)  gyro=(   609,   177,   -36)  temp_raw= -3116  errors(i2c/tx)=13/0
+seq=      8466  t=    169340 ms   50.00 Hz  accel=(  -220, 32767, 14556)  gyro=(   602,   172,   -38)  temp_raw= -3116  errors(i2c/tx)=13/0
+Stopped.
+
+=== summary of 126 real frames ===
+seq range: 8293..8466
+i2c/tx errors (cumulative): 13/0
+accel_x: mean=  -224.21 min=   -290 max=   -154 std=  25.3
+accel_y: mean= 32767.00 min=  32767 max=  32767 std=   0.0
+accel_z: mean= 14559.27 min=  14452 max=  14702 std=  40.9
+gyro_x: mean=   609.25 min=    594 max=    625 std=   7.0
+gyro_y: mean=   176.43 min=    168 max=    189 std=   4.5
+gyro_z: mean=   -39.85 min=    -50 max=    -32 std=   3.3
+temperature_raw: mean=-3107.0 -> 27.39 C
+accel_y saturated frames: 126/126

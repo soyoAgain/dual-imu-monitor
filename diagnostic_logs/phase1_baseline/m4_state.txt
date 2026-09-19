@@ -1,0 +1,12 @@
+remoteproc0 state: running
+remoteproc0 firmware: m4_rpmsg.elf
+crw-rw---- 1 root dialout 5, 3 Feb  7 16:57 /dev/ttyRPMSG0
+
+[    1.591321] remoteproc remoteproc0: releasing m4
+[    3.924207] remoteproc remoteproc0: m4 is available
+[   12.876126] remoteproc remoteproc0: powering up m4
+[   12.886181] remoteproc remoteproc0: Booting fw image m4_rpmsg.elf, size 50228
+[   12.992862] virtio_rpmsg_bus virtio0: creating channel rpmsg-tty-channel addr 0x400
+[   13.001872] virtio_rpmsg_bus virtio0: rpmsg host is online
+[   13.016382] rpmsg_tty virtio0.rpmsg-tty-channel.-1.1024: new channel: 0x400 -> 0x400 : ttyRPMSG0
+[   13.091303] remoteproc remoteproc0: remote processor m4 is now up

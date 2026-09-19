@@ -1,0 +1,20 @@
+recorded_at: 2026-09-19 15:26:11
+
+== current HEAD ==
+6838b003323c110f6f078fa1d4cbc8416442413d
+
+== recent commits ==
+6838b00 docs: fix KaTeX parse error and clarify Dropbear in fusion pipeline
+1c6d64c docs: add dual-IMU fusion implementation pipeline
+831bf0f chore: establish MP157 project baseline
+
+== working tree status ==
+?? diagnostic_logs/phase1_baseline/
+(empty above means clean)
+
+== GUI files present in baseline commit 831bf0f ==
+gui/README.md
+gui/app.py
+run_gui.sh
+tools/monitor_rpmsg_imu.py
+tools/read_rpmsg_imu.py
