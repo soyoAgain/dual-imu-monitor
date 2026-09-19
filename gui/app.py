@@ -192,12 +192,14 @@ class StreamWorker(QThread):
 
     def __init__(self, host: str, interface: str, reader: Path,
                  auto_start_m4: bool = True, demo: bool = False,
-                 rotation=None, accel_bias=None):
+                 rotation=None, accel_bias=None, mpu_accel_bias=None):
         super().__init__()
         self.host, self.interface, self.reader = host, interface, reader
         self.auto_start_m4, self.demo = auto_start_m4, demo
         self.rotation = np.asarray(rotation if rotation is not None else np.eye(3), dtype=float)
         self.accel_bias = np.asarray(accel_bias if accel_bias is not None else np.zeros(3), dtype=float)
+        self.mpu_accel_bias = np.asarray(mpu_accel_bias if mpu_accel_bias is not None
+                                         else np.zeros(3), dtype=float)
         self.process: subprocess.Popen | None = None
         self.control_path = f"/tmp/mp157-gui-{os.getpid()}-{id(self):x}"
         self.master_started = False
@@ -321,7 +323,7 @@ class StreamWorker(QThread):
                 0.4 * np.cos(0.7 * timestamp),
                 9.70 + 0.2 * np.sin(0.4 * timestamp),
             ])
-            mpu_accel = true_accel.copy()
+            mpu_accel = true_accel + self.mpu_accel_bias
             if saturated:
                 mpu_accel[1] = 19.6127
             mpu_gyro = np.array([
@@ -535,6 +537,7 @@ class MainWindow(QMainWindow):
         self.last_sync_errors = 0
         self.rotation = np.eye(3)
         self.icm_accel_bias = np.zeros(3)
+        self.mpu_accel_bias = np.zeros(3)
         self.calibration_loaded = False
         self.calibration_text = "未加载"
         self.fusion = FusionStateMachine()
@@ -555,6 +558,8 @@ class MainWindow(QMainWindow):
             self.icm_accel_bias = np.array(data.get("icm_accel_bias_mps2", [0.0, 0.0, 0.0]),
                                            dtype=float)
             metrics = data.get("metrics", {})
+            self.mpu_accel_bias = np.array(metrics.get("mpu_accel_bias_mps2", [0.0, 0.0, 0.0]),
+                                           dtype=float)
             validation = data.get("validation") or {}
             correlations = validation.get("correlation", [])
             correlation_text = ("，验证相关 " +
@@ -628,7 +633,7 @@ class MainWindow(QMainWindow):
             self.host.text().strip() or "mp157",
             self.interface.text().strip() or "en7", reader,
             self.auto_start_m4.isChecked(), self.demo,
-            self.rotation, self.icm_accel_bias,
+            self.rotation, self.icm_accel_bias, self.mpu_accel_bias,
         )
         self.worker.sample_received.connect(self.accept_sample)
         self.worker.log_received.connect(self.log)
@@ -653,8 +658,9 @@ class MainWindow(QMainWindow):
         sync_ok = sample.sync_errors == self.last_sync_errors
         self.last_spi_errors = sample.spi_errors
         self.last_sync_errors = sample.sync_errors
+        mpu_corrected = np.asarray(sample.mpu_accel, dtype=float) - self.mpu_accel_bias
         output = self.fusion.update(
-            sample.mpu_accel, icm_accel_mpu, sample.icm_age_ms,
+            mpu_corrected, icm_accel_mpu, sample.icm_age_ms,
             spi_ok=spi_ok, sync_ok=sync_ok, calibration_ok=self.calibration_loaded)
         sample.fusion_state = output.state
         sample.icm_valid = output.icm_valid
@@ -670,8 +676,8 @@ class MainWindow(QMainWindow):
         dt = min(sample.timestamp - self.last_timestamp, 0.1)
         self.last_timestamp = sample.timestamp
 
-        accel = np.asarray(sample.accel if sample.accel is not None else sample.mpu_accel,
-                           dtype=float)
+        accel = np.asarray(sample.accel if sample.accel is not None
+                           else mpu_corrected, dtype=float)
         gyro = np.asarray(sample.gyro, dtype=float)
 
         if not self.attitude_ready:

@@ -331,6 +331,9 @@ def main():
         slope_z = float(np.polyfit(pose_mpu[:, 2], predicted_poses[:, 2], 1)[0])
         residual = static_pred - static_mpu
         offset = residual.mean(axis=0)
+        # MPU accelerometer bias relative to the gravity-consistent ICM reference
+        # (Y is unknown because the MPU Y axis is saturated).
+        mpu_bias = np.array([-offset[0], 0.0, -offset[2]])
         detrended_rmse = np.sqrt(((residual - offset) ** 2).mean(axis=0))
         y_range = (float(static_pred[:, 1].min()), float(static_pred[:, 1].max()))
 
@@ -366,7 +369,8 @@ def main():
                     "pose_correlation_z": corr_z,
                     "pose_slope_x": slope_x,
                     "pose_slope_z": slope_z,
-                    "mpu_accel_bias_mps2": offset.tolist(),
+                    "mpu_accel_bias_mps2": mpu_bias.tolist(),
+                    "raw_offset_mps2": offset.tolist(),
                     "detrended_rmse_mps2": detrended_rmse.tolist(),
                     "reconstructed_y_range_mps2": list(y_range),
                 },
