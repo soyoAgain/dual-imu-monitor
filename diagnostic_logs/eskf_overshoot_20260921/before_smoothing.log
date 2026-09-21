@@ -1,0 +1,16 @@
+qt.qpa.fonts: Populating font family aliases took 60 ms. Replace uses of missing font family "Monospace" with one that exists to avoid this cost.
+[09:28:48] 轨迹诊断记录：/tmp/mp157-overshoot/motion.jsonl
+[09:28:48] 已清空曲线、轨迹、融合状态和积分状态
+[09:28:48] ESKF 初始化：请保持传感器静止约 2 秒
+[09:28:49] SSH 主连接已建立，后续操作复用同一连接
+[09:28:49] 已上传 monitor_dual_imu.py 到 mp157:/tmp/
+[09:28:49] M4 状态：running，固件：m4_rpmsg.elf，ICM20608 设备：存在
+[09:28:51] 姿态标定完成：重力 9.796 m/s²，陀螺零偏 [ 4.8    1.337 -0.281] °/s
+METRICS seq: 92076
+频率: 50.0 Hz
+MPU 温度: 26.04 °C
+I²C/TX 错误: 0/0
+姿态(陀螺) R/P/Y: 3.0 / -0.1 / 2.4 °
+姿态(ESKF) R/P/Y: 3.0 / -0.3 / -1.6 °
+ESKF 零速/静止观测: 686/136
+静止: 是

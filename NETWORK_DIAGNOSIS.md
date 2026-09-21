@@ -1,5 +1,33 @@
 # 网络失联排查记录（2026-09-19）
 
+## 网线重连快速恢复配置与验收（2026-09-21）
+
+已将 Mac `AX88772D/en7` 从 DHCP 改为手动 `169.254.50.1/16`，网关为空；用户在自己的终端完成管理员权限操作。SSH 别名保持绑定 en7，连接超时 3 秒、保活间隔 2 秒、未回应次数 3。GUI 主连接也明确设置这些参数。
+
+GUI 在连接退出后等待 2 秒自动重试，重试前清空数据和 ESKF 并重新静止初始化；停止和关闭取消重试，SSH/SCP/安装准备阶段支持取消。既有 9 项回归和真实 GUI 全流程通过。
+
+实际 SSH 会话中断后约 3.1 秒恢复数据。用户物理拔插验证中，链路恢复后约 7.8 秒恢复新 SSH 会话和 50 Hz 数据，I²C/TX=0/0。链路恢复瞬间 macOS 仍会短暂没有 IPv4，随后重新挂上固定地址；不能把“固定 IP”理解为物理链路一恢复就立即可连接。测试未改动开机启动服务，恢复时间会随地址就绪、连接失效检测和板端状态变化。
+
+详细结果与首次验证脚本过早断言的记录见 [重连验收](diagnostic_logs/network_reconnect_20260921/README.md)。
+
+## en7 无可用地址与采集固件恢复（2026-09-21）
+
+用户截图报 `getifaddrs: en7: no suitable addresses`，SSH 尚未建立。复查时 en7 已为 active、100baseTX 全双工，IPv4 为 `169.254.230.253/16`；绑定 en7 的 ping 3/3 成功，`ssh mp157` 返回 `ssh_ok`。说明截图时的接口地址问题当前已恢复，具体断链/地址分配经过未确认。系统默认目标路由仍指向 en0，继续保留 SSH 的 en7 绑定。
+
+另发现 M4 为 offline、默认固件名 `rproc-m4-fw`，`/dev/ttyRPMSG0` 不存在。板端 `/lib/firmware/m4_rpmsg.elf` 和 `/etc/systemd/system/m4-rpmsg.service` 均为 0 字节，服务显示 masked；文件为何变空尚不明确，不能将其归因于 en7 地址问题。
+
+确认本地构建的 `M4_SENSOR_RESET_TEST=OFF`、`M4_RPMSG_DISABLE_TX=OFF`，增量构建无需更新。将 50228 字节的正常固件先上传为 `.recovery`，SHA-256 与本地一致（`7fcb9b8eda6665a4027eb050bbd29db2c1ad717b16a543555ecde2e923ac4bd2`）后替换板端空固件，按既有流程解绑 UART5 并启动 M4。本次未修改开机服务。
+
+恢复后 M4=running、固件为 `m4_rpmsg.elf`、`/dev/ttyRPMSG0` 存在；真实双 IMU 读取 5 帧成功，I²C/TX/SPI/SYNC 错误均为 0。GUI 可重新点击开始；开机服务的空文件仍需另行恢复，不能据本次手动启动认定断电重启后会自动采集。
+
+## SSH 超时复查（2026-09-21）
+
+- Mac 有线网卡 `en7` 为 active、100baseTX 全双工，当前地址 `169.254.120.40/16`；但 `route -n get 169.254.50.2` 显示目标路由指向 Wi-Fi `en0`。
+- 指定 `ping -b en7` 后，3/3 成功、零丢包，平均延迟约 0.8 ms；指定 `ssh -o BindInterface=en7 mp157` 后正常返回 `ssh_ok`。此次超时由 Mac 侧选路导致。
+- 已在 Mac 的 `~/.ssh/config` 的 `Host mp157` 中加入 `BindInterface en7`，规避错误选路。
+- 开发板 `eth0` 为 UP，地址 `169.254.50.2/16`；存在 `usb0`，但为 DOWN 且无 IP，存在 USB Device 控制器 `49000000.usb-otg`。Mac 当前 USB 枚举未见 STM32 网络设备，仅见 ASIX 网卡及其他外设；尚未建立 USB 虚拟网络连接。
+
+
 ## 根因确认（2026-09-19，重启后只读测量）
 
 开发板断电重启后（路由已修复），在 **不启动 M4** 的情况下做了两组只读测量，确认了根因。

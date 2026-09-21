@@ -1,0 +1,26 @@
+qt.qpa.fonts: Populating font family aliases took 64 ms. Replace uses of missing font family "Monospace" with one that exists to avoid this cost.
+ESKF bias [4.69639743e-04 1.02171825e-05 3.69502506e-04] [-4.04663580e-03 -9.12755501e-03 -9.70213556e-05] velocity [-1.56383647e-05 -2.16566398e-05  5.30342411e-05] ZUPT 531
+LIVE 706 positions 501 span 9.99992599999996 bounds [[-0.014700725507758652, 0.007090535131681893], [-0.02832839169940852, -0.006537131059967971], [-0.011518732159001729, 0.010272528480438817]] metrics seq: 128275
+频率: 50.0 Hz
+MPU 温度: 26.19 °C
+I²C/TX 错误: 0/0
+姿态(陀螺) R/P/Y: 3.1 / 0.0 / 1.5 °
+姿态(ESKF) R/P/Y: 3.0 / -0.0 / 0.0 °
+ICM ESKF 零速/静止观测: 531/105
+静止: 是
+[09:40:55] 轨迹诊断记录：/tmp/mp157-overshoot/icm_six_axis.jsonl
+[09:40:55] 已清空曲线、轨迹、融合状态和积分状态
+[09:40:55] ESKF 初始化：请保持传感器静止约 2 秒
+[09:40:56] SSH 主连接已建立，后续操作复用同一连接
+[09:40:56] 已上传 monitor_dual_imu.py 到 mp157:/tmp/
+[09:40:56] M4 状态：running，固件：m4_rpmsg.elf，ICM20608 设备：存在
+[09:40:58] 姿态标定完成：重力 9.700 m/s²，陀螺零偏 [-0.235 -0.536 -0.123] °/s
+[09:41:13] 已清空曲线、轨迹、融合状态和积分状态
+[09:41:13] 轨迹诊断记录：/tmp/mp157-overshoot/icm_six_axis.jsonl
+[09:41:13] 已清空曲线、轨迹、融合状态和积分状态
+[09:41:13] ESKF 初始化：请保持传感器静止约 2 秒
+[09:41:13] SSH 主连接已建立，后续操作复用同一连接
+[09:41:13] 已上传 monitor_dual_imu.py 到 mp157:/tmp/
+[09:41:13] M4 状态：running，固件：m4_rpmsg.elf，ICM20608 设备：存在
+[09:41:16] 姿态标定完成：重力 9.699 m/s²，陀螺零偏 [-0.239 -0.537 -0.119] °/s
+PASS start/stop/restart/clear/live plots/10s pruning/autoscale/controls/close

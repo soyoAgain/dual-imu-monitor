@@ -1,0 +1,38 @@
+qt.qpa.fonts: Populating font family aliases took 64 ms. Replace uses of missing font family "Monospace" with one that exists to avoid this cost.
+CUT_REAL_SSH
+RECOVERED_AFTER 3.1268055840000004 seconds; estimator reset
+ESKF bias [-1.02848051e-04  3.73112596e-06 -7.20531135e-04] [-0.00393582 -0.00765459 -0.0021756 ] velocity [3.27405295e-04 5.09849349e-06 1.79299817e-04] ZUPT 583
+LIVE 703 positions 501 span 9.999993000000018 bounds [[-0.0009182470434062987, 0.0010817529565937012], [-0.0010299070353938754, 0.0009700929646061246], [-0.0010054864061494943, 0.0009945135938505057]] metrics seq: 1016
+频率: 50.0 Hz
+MPU 温度: 27.76 °C
+I²C/TX 错误: 0/0
+姿态(陀螺) R/P/Y: 2.6 / -0.7 / -0.0 °
+姿态(ESKF) R/P/Y: 2.7 / -0.7 / -0.0 °
+ICM ESKF 零速/静止观测: 583/116
+静止: 是
+[21:34:44] 轨迹诊断记录：/tmp/mp157-overshoot/reconnect.jsonl
+[21:34:44] 已清空曲线、轨迹、融合状态和积分状态
+[21:34:44] ESKF 初始化：请保持传感器静止约 2 秒
+[21:34:44] SSH 主连接已建立，后续操作复用同一连接
+[21:34:44] 已上传 monitor_dual_imu.py 到 mp157:/tmp/
+[21:34:45] M4 状态：running，固件：m4_rpmsg.elf，ICM20608 设备：存在
+[21:34:47] 姿态标定完成：重力 9.699 m/s²，陀螺零偏 [-0.221 -0.434 -0.117] °/s
+[21:34:48] Shared connection to 169.254.50.2 closed.
+[21:34:48] 错误：SSH 数据流退出，状态码 255
+[21:34:48] 连接中断；自动重连后将重置轨迹并重新静止标定
+[21:34:50] 轨迹诊断记录：/tmp/mp157-overshoot/reconnect.jsonl
+[21:34:50] 已清空曲线、轨迹、融合状态和积分状态
+[21:34:50] ESKF 初始化：请保持传感器静止约 2 秒
+[21:34:51] SSH 主连接已建立，后续操作复用同一连接
+[21:34:51] 已上传 monitor_dual_imu.py 到 mp157:/tmp/
+[21:34:51] M4 状态：running，固件：m4_rpmsg.elf，ICM20608 设备：存在
+[21:34:53] 姿态标定完成：重力 9.703 m/s²，陀螺零偏 [-0.226 -0.435 -0.13 ] °/s
+[21:35:08] 已清空曲线、轨迹、融合状态和积分状态
+[21:35:08] 轨迹诊断记录：/tmp/mp157-overshoot/reconnect.jsonl
+[21:35:08] 已清空曲线、轨迹、融合状态和积分状态
+[21:35:08] ESKF 初始化：请保持传感器静止约 2 秒
+[21:35:08] SSH 主连接已建立，后续操作复用同一连接
+[21:35:08] 已上传 monitor_dual_imu.py 到 mp157:/tmp/
+[21:35:08] M4 状态：running，固件：m4_rpmsg.elf，ICM20608 设备：存在
+[21:35:11] 姿态标定完成：重力 9.706 m/s²，陀螺零偏 [-0.233 -0.438 -0.12 ] °/s
+PASS start/stop/restart/clear/live plots/10s pruning/autoscale/controls/close

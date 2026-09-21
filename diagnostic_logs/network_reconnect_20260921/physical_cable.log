@@ -1,0 +1,52 @@
+qt.qpa.fonts: Populating font family aliases took 64 ms. Replace uses of missing font family "Monospace" with one that exists to avoid this cost.
+LINK_DOWN 2.684507875
+LINK_UP 9.411650584 fixed_ip False
+FIXED_IP_READY True
+DATA_RESUMED_AFTER_LINK_UP 7.800913791000001 new_session True
+[21:38:38] 轨迹诊断记录：/tmp/mp157-cable-check/live.jsonl
+[21:38:38] 已清空曲线、轨迹、融合状态和积分状态
+[21:38:38] ESKF 初始化：请保持传感器静止约 2 秒
+[21:38:38] SSH 主连接已建立，后续操作复用同一连接
+[21:38:38] 已上传 monitor_dual_imu.py 到 mp157:/tmp/
+[21:38:38] M4 状态：running，固件：m4_rpmsg.elf，ICM20608 设备：存在
+[21:38:47] Shared connection to 169.254.50.2 closed.
+[21:38:47] 错误：SSH 数据流退出，状态码 255
+[21:38:47] 连接中断；自动重连后将重置轨迹并重新静止标定
+[21:38:49] 轨迹诊断记录：/tmp/mp157-cable-check/live.jsonl
+[21:38:49] 已清空曲线、轨迹、融合状态和积分状态
+[21:38:49] ESKF 初始化：请保持传感器静止约 2 秒
+[21:38:51] SSH 主连接已建立，后续操作复用同一连接
+[21:38:51] 已上传 monitor_dual_imu.py 到 mp157:/tmp/
+[21:38:51] M4 状态：running，固件：m4_rpmsg.elf，ICM20608 设备：存在
+[21:38:52] Traceback (most recent call last):
+[21:38:52]   File "/tmp/monitor_dual_imu.py", line 72, in __init__
+[21:38:52]     fcntl.flock(self.lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+[21:38:52] BlockingIOError: [Errno 11] Resource temporarily unavailable
+[21:38:52] During handling of the above exception, another exception occurred:
+[21:38:52] Traceback (most recent call last):
+[21:38:52]   File "/tmp/monitor_dual_imu.py", line 224, in <module>
+[21:38:52]     sys.exit(main())
+[21:38:52]   File "/tmp/monitor_dual_imu.py", line 148, in main
+[21:38:52]     mpu = MpuReader(args.mpu_device)
+[21:38:52]   File "/tmp/monitor_dual_imu.py", line 75, in __init__
+[21:38:52]     raise RuntimeError("another RPMsg IMU reader is already running")
+[21:38:52] RuntimeError: another RPMsg IMU reader is already running
+[21:38:52] Shared connection to 169.254.50.2 closed.
+[21:38:52] 错误：SSH 数据流退出，状态码 1
+[21:38:52] 连接中断；自动重连后将重置轨迹并重新静止标定
+[21:38:54] 轨迹诊断记录：/tmp/mp157-cable-check/live.jsonl
+[21:38:54] 已清空曲线、轨迹、融合状态和积分状态
+[21:38:54] ESKF 初始化：请保持传感器静止约 2 秒
+[21:38:54] SSH 主连接已建立，后续操作复用同一连接
+[21:38:54] 已上传 monitor_dual_imu.py 到 mp157:/tmp/
+[21:38:54] M4 状态：running，固件：m4_rpmsg.elf，ICM20608 设备：存在
+[21:38:57] 姿态标定完成：重力 9.695 m/s²，陀螺零偏 [-0.225 -0.461 -0.135] °/s
+seq: 12637
+频率: 50.0 Hz
+MPU 温度: 28.43 °C
+I²C/TX 错误: 0/0
+姿态(陀螺) R/P/Y: 2.7 / -0.7 / 0.0 °
+姿态(ESKF) R/P/Y: 2.7 / -0.7 / -0.0 °
+ICM ESKF 零速/静止观测: 28/5
+静止: 是
+PASS physical cable cycle / fixed IP / live data recovery / cleanup

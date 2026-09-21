@@ -1,0 +1,11 @@
+qt.qpa.fonts: Populating font family aliases took 63 ms. Replace uses of missing font family "Monospace" with one that exists to avoid this cost.
+LINK_DOWN 2.8330715829999997
+LINK_UP 7.331563958 fixed_ip False
+Traceback (most recent call last):
+  File "/tmp/mp157-cable-check/check.py", line 28, in tick
+    assert 'inet 169.254.50.1 ' in net
+AssertionError
+Traceback (most recent call last):
+  File "/tmp/mp157-cable-check/check.py", line 42, in <module>
+    W.show=show;sys.argv=[sys.argv[1]];ns['main']();assert state.get('pass')
+AssertionError
