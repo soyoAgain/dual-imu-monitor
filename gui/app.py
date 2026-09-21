@@ -38,6 +38,8 @@ TOOLS_DIR = PROJECT_ROOT / "tools"
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
 
+from eskf import InertialESKF, stationary_imu  # noqa: E402
+
 from fusion_state import (  # noqa: E402
     FusionStateMachine, STATE_BLENDED, STATE_ICM_FALLBACK, STATE_INVALID,
     STATE_MPU_PRIMARY, transform_icm_accel,
@@ -62,7 +64,7 @@ STATE_COLOR = {
     STATE_ICM_FALLBACK: "#d97706",
     STATE_INVALID: "#dc2626",
 }
-TRAJECTORY_HALF_RANGE_M = 0.10
+TRAJECTORY_HISTORY_SECONDS = 10.0
 
 DUAL_RE = re.compile(
     r"seq=(?P<seq>\d+) t=(?P<t>[\d.]+) "
@@ -211,13 +213,16 @@ class StreamWorker(QThread):
             self._run_demo()
             return
         try:
-            master = subprocess.run(
+            master = self._run_command(
                 [
                     "ssh", "-MNf", "-o", "ControlMaster=yes",
                     "-o", f"ControlPath={self.control_path}",
-                    "-o", "ControlPersist=60",
+                    "-o", "ControlPersist=no",
+                    "-o", "BatchMode=yes",
+                    "-o", "ServerAliveInterval=2",
+                    "-o", "ServerAliveCountMax=3",
                     "-o", f"BindInterface={self.interface}",
-                    "-o", "ConnectTimeout=5", self.host,
+                    "-o", "ConnectTimeout=3", self.host,
                 ],
                 capture_output=True, text=True, timeout=10,
             )
@@ -228,7 +233,7 @@ class StreamWorker(QThread):
             if self.auto_start_m4:
                 self.status_changed.emit("正在配置 Linux 开机启动 M4…")
                 installer = self.reader.parent / "install_m4_autostart.sh"
-                installed = subprocess.run(
+                installed = self._run_command(
                     [str(installer), self.host, self.interface, self.control_path],
                     capture_output=True, text=True, timeout=45,
                 )
@@ -237,20 +242,20 @@ class StreamWorker(QThread):
                 self.log_received.emit(
                     "M4 开机启动已启用：" + " ".join(installed.stdout.splitlines()[-4:]))
             self.status_changed.emit("正在上传采集脚本…")
-            result = subprocess.run(
+            result = self._run_command(
                 ["scp", "-o", f"BindInterface={self.interface}",
                  "-o", f"ControlPath={self.control_path}",
-                 "-o", "ConnectTimeout=5", str(self.reader), f"{self.host}:/tmp/"],
+                 "-o", "ConnectTimeout=3", str(self.reader), f"{self.host}:/tmp/"],
                 capture_output=True, text=True, timeout=15,
             )
             if result.returncode:
                 raise RuntimeError(result.stderr.strip() or "SCP 失败")
             self.log_received.emit(f"已上传 {self.reader.name} 到 {self.host}:/tmp/")
-            probe = subprocess.run(
+            probe = self._run_command(
                 [
                     "ssh", "-o", f"BindInterface={self.interface}",
                     "-o", f"ControlPath={self.control_path}",
-                    "-o", "ConnectTimeout=5", self.host,
+                    "-o", "ConnectTimeout=3", self.host,
                     "r=/sys/class/remoteproc/remoteproc0; "
                     "printf '%s %s ' \"$(cat $r/state)\" \"$(cat $r/firmware)\"; "
                     "ls -l /dev/icm20608 2>/dev/null | wc -l",
@@ -273,11 +278,13 @@ class StreamWorker(QThread):
             if not icm_present:
                 raise RuntimeError(
                     "未找到 /dev/icm20608，请先在开发板上执行 sh tools/install_icm20608.sh。")
+            if self._stopping:
+                return
             self.status_changed.emit("已连接，等待双传感器数据…")
             command = [
                 "ssh", "-tt", "-o", f"BindInterface={self.interface}",
                 "-o", f"ControlPath={self.control_path}",
-                "-o", "ConnectTimeout=5", self.host,
+                "-o", "ConnectTimeout=3", self.host,
                 "python3 -u /tmp/monitor_dual_imu.py",
             ]
             self.process = subprocess.Popen(
@@ -297,18 +304,52 @@ class StreamWorker(QThread):
             if code and not self._stopping:
                 raise RuntimeError(f"SSH 数据流退出，状态码 {code}")
         except Exception as exc:
+            if self._stopping:
+                return
             self.log_received.emit(f"错误：{exc}")
             self.status_changed.emit("连接失败")
         finally:
             self.process = None
-            if self.master_started:
+            # Also attempt cleanup when cancellation races with ssh -f startup.
+            try:
                 subprocess.run(
                     ["ssh", "-O", "exit", "-o", f"ControlPath={self.control_path}", self.host],
-                    capture_output=True, timeout=5,
+                    capture_output=True, timeout=2,
                 )
-                self.master_started = False
+            except subprocess.TimeoutExpired:
+                pass
+            self.master_started = False
             if self._stopping:
                 self.status_changed.emit("已停止")
+
+    def _run_command(self, command, capture_output=True, text=True, timeout=10):
+        """Cancelable setup; kill the whole local command group on stop/timeout."""
+        if self._stopping:
+            raise InterruptedError("连接已取消")
+        proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                text=text, start_new_session=True)
+        deadline = time.monotonic() + timeout
+        try:
+            while True:
+                if self._stopping:
+                    raise InterruptedError("连接已取消")
+                if time.monotonic() >= deadline:
+                    raise subprocess.TimeoutExpired(command, timeout)
+                try:
+                    stdout, stderr = proc.communicate(timeout=.2)
+                    return subprocess.CompletedProcess(command, proc.returncode, stdout, stderr)
+                except subprocess.TimeoutExpired:
+                    continue
+        finally:
+            if proc.poll() is None:
+                try:
+                    os.killpg(proc.pid, signal.SIGTERM)
+                    proc.communicate(timeout=1)
+                except subprocess.TimeoutExpired:
+                    os.killpg(proc.pid, signal.SIGKILL)
+                    proc.communicate()
+                except ProcessLookupError:
+                    proc.wait()
 
     def _run_demo(self):
         self.status_changed.emit("演示模式 · 50 Hz 双传感器")
@@ -410,13 +451,11 @@ class PlotCanvas(FigureCanvasQTAgg):
             axis.set_title(title, loc="left", fontsize=10, fontweight="bold")
             axis.set_ylabel(unit); axis.set_xlabel("时间 / s")
             axis.grid(True, alpha=0.25); axis.legend(loc="upper right", ncol=3, fontsize=8)
-        self.path_ax.set_title("图3　传感器空间轨迹（积分估计）", loc="left", fontsize=10, fontweight="bold")
+        self.path_ax.set_title("图3　ICM20608 空间轨迹（ESKF）", loc="left", fontsize=10, fontweight="bold")
         self.path_ax.set_xlabel("X / m"); self.path_ax.set_ylabel("Y / m"); self.path_ax.set_zlabel("Z / m")
-        self.path_ax.set_xlim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
-        self.path_ax.set_ylim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
-        self.path_ax.set_zlim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
+        self.update_trajectory([])
         self.path_ax.set_box_aspect((1, 1, 1))
-        self.path_ax.text2D(0.99, 0.97, "融合加速度 + 重力补偿 + ZUPT", transform=self.path_ax.transAxes,
+        self.path_ax.text2D(0.99, 0.97, "ICM 六轴 · 10 s 平滑 · 自动缩放", transform=self.path_ax.transAxes,
                             ha="right", color="#d97706", fontsize=8)
         self._build_attitude_axes()
         # 固定边距，避免 tight_layout 随刻度标签宽度变化导致子图忽大忽小。
@@ -502,17 +541,35 @@ class PlotCanvas(FigureCanvasQTAgg):
         self._autoscale(self.gyro_ax, t, mpu_gyro)
         self._autoscale(self.icm_gyro_ax, t, icm_gyro)
         self._autoscale(self.icm_accel_ax, t, icm_accel)
-        if positions:
-            xyz = np.array(positions)
-            self.path_line.set_data(xyz[:, 0], xyz[:, 1])
-            self.path_line.set_3d_properties(xyz[:, 2])
-            self.path_head._offsets3d = (
-                np.array([xyz[-1, 0]]), np.array([xyz[-1, 1]]), np.array([xyz[-1, 2]]),
-            )
-            self.path_ax.set_xlim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
-            self.path_ax.set_ylim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
-            self.path_ax.set_zlim(-TRAJECTORY_HALF_RANGE_M, TRAJECTORY_HALF_RANGE_M)
+        self.update_trajectory(positions)
         self.update_attitude(attitude)
+        self.draw_idle()
+
+    def update_trajectory(self, positions):
+        xyz = np.asarray(positions, dtype=float).reshape(-1, 3)
+        xyz = xyz[np.isfinite(xyz).all(axis=1)]
+        self.path_line.set_data_3d(xyz[:, 0], xyz[:, 1], xyz[:, 2])
+        self.path_head._offsets3d = tuple(xyz[-1:, i] for i in range(3))
+        if len(xyz):
+            low, high = xyz.min(axis=0), xyz.max(axis=0)
+            center = (low + high) / 2
+            # Equal axis scales with 10% padding; keep stationary points visible.
+            half_range = max(float(np.max(high - low)) * 0.6, 0.001)
+        else:
+            center, half_range = np.zeros(3), 0.001
+        for setter, value in zip(
+                (self.path_ax.set_xlim, self.path_ax.set_ylim, self.path_ax.set_zlim), center):
+            setter(value - half_range, value + half_range)
+
+    def clear_data(self):
+        for lines in (self.accel_lines, self.gyro_lines, self.icm_gyro_lines,
+                      self.icm_accel_lines, self.raw_accel_lines, self.raw_gyro_lines,
+                      self.raw_icm_accel_lines):
+            for line in lines:
+                line.set_data([], [])
+        self.update_trajectory([])
+        for line in (*self.att_axis_lines, self.att_normal, self.att_disc):
+            line.set_data_3d([], [], [])
         self.draw_idle()
 
 
@@ -520,14 +577,19 @@ class MainWindow(QMainWindow):
     def __init__(self, demo: bool = False):
         super().__init__()
         self.demo = demo
+        self.trace_path = None
+        self.trace_file = None
         self.worker: StreamWorker | None = None
         self.samples = deque(maxlen=5000)
         self.positions = deque(maxlen=2500)
-        self.attitude_samples = []
+        self.attitude_samples = deque(maxlen=100)
+        self.stationary_samples = deque(maxlen=20)
+        self.eskf = None
         self.attitude_ready = False
         self.gravity = GRAVITY
         self.accel_baseline = None
         self.gyro_bias = np.zeros(3)
+        self.mpu_display_bias = np.zeros(3)
         self.quaternion = None
         self.gyro_quaternion = None
         self.filtered_accel = None
@@ -545,6 +607,11 @@ class MainWindow(QMainWindow):
         self.calibration_text = "未加载"
         self.fusion = FusionStateMachine()
         self._closing = False
+        self._want_stream = False
+        self.reconnect_timer = QTimer(self)
+        self.reconnect_timer.setSingleShot(True)
+        self.reconnect_timer.setInterval(2000)
+        self.reconnect_timer.timeout.connect(self._begin_stream)
         self.setWindowTitle("MP157 · MPU6050 + ICM20608 双传感器监视器")
         self.resize(1560, 1020)
         self._load_calibration()
@@ -585,19 +652,17 @@ class MainWindow(QMainWindow):
         self.interface = QLineEdit("en7")
         self.window_seconds = QSpinBox(); self.window_seconds.setRange(2, 300); self.window_seconds.setValue(20); self.window_seconds.setSuffix(" s")
         self.refresh_ms = QSpinBox(); self.refresh_ms.setRange(40, 2000); self.refresh_ms.setValue(100); self.refresh_ms.setSuffix(" ms")
-        self.damping = QDoubleSpinBox(); self.damping.setRange(0.0, 1.0); self.damping.setDecimals(4); self.damping.setSingleStep(0.001); self.damping.setValue(0.985)
         self.alpha_spin = QDoubleSpinBox(); self.alpha_spin.setRange(0.01, 1.0); self.alpha_spin.setDecimals(2); self.alpha_spin.setSingleStep(0.05); self.alpha_spin.setValue(0.2)
-        self.kp_spin = QDoubleSpinBox(); self.kp_spin.setRange(0.0, 5.0); self.kp_spin.setDecimals(2); self.kp_spin.setSingleStep(0.1); self.kp_spin.setValue(1.5)
-        self.gravity_check = QCheckBox("启用四元数重力补偿"); self.gravity_check.setChecked(True)
         self.zupt_check = QCheckBox("启用零速修正 (ZUPT)"); self.zupt_check.setChecked(True)
         self.raw_check = QCheckBox("显示原始数据（叠加 MPU/ICM）")
         self.auto_start_m4 = QCheckBox("自动启动 M4，并启用 Linux 开机启动")
         self.auto_start_m4.setChecked(True)
         form.addRow("SSH 主机", self.host); form.addRow("有线接口", self.interface)
         form.addRow("显示窗口", self.window_seconds)
-        form.addRow("刷新间隔", self.refresh_ms); form.addRow("速度阻尼", self.damping)
-        form.addRow("滤波系数 α", self.alpha_spin); form.addRow("姿态增益 kp", self.kp_spin)
-        form.addRow(self.gravity_check); form.addRow(self.zupt_check)
+        form.addRow("刷新间隔", self.refresh_ms)
+        form.addRow("陀螺显示滤波 α", self.alpha_spin)
+        form.addRow(QLabel("轨迹：ICM20608 六轴 ESKF"))
+        form.addRow(self.zupt_check)
         form.addRow(self.raw_check); form.addRow(self.auto_start_m4)
         layout.addWidget(config)
         row = QHBoxLayout()
@@ -629,9 +694,26 @@ class MainWindow(QMainWindow):
         self.console.appendPlainText(f"[{time.strftime('%H:%M:%S')}] {message}")
 
     def start_stream(self):
+        self._want_stream = True
+        self.reconnect_timer.stop()
+        self._begin_stream()
+
+    def _begin_stream(self):
+        if self._closing or not self._want_stream:
+            return
         if self.worker and self.worker.isRunning():
             return
         reader = TOOLS_DIR / "monitor_dual_imu.py"
+        if self.trace_path is not None:
+            try:
+                self.trace_path.parent.mkdir(parents=True, exist_ok=True)
+                self.trace_file = self.trace_path.open("a", buffering=1)
+                self.trace_event("start", wall_time=time.time())
+                self.log(f"轨迹诊断记录：{self.trace_path}")
+            except OSError as exc:
+                self.log(f"无法打开轨迹诊断记录：{exc}")
+        self.clear_data()
+        self.log("ESKF 初始化：请保持传感器静止约 2 秒")
         self.worker = StreamWorker(
             self.host.text().strip() or "mp157",
             self.interface.text().strip() or "en7", reader,
@@ -645,11 +727,45 @@ class MainWindow(QMainWindow):
         self.worker.start(); self.start_button.setEnabled(False); self.stop_button.setEnabled(True)
 
     def stop_stream(self):
-        if self.worker:
+        self._want_stream = False
+        self.reconnect_timer.stop()
+        if self.worker and self.worker.isRunning():
             self.status.setText("正在停止…"); self.worker.stop()
+        else:
+            self.status.setText("已停止")
+            self.start_button.setEnabled(True); self.stop_button.setEnabled(False)
+
+    def trace_event(self, event, **values):
+        if self.trace_file is None:
+            return
+        try:
+            self.trace_file.write(json.dumps({"event": event, **values},
+                                            default=lambda value: value.tolist()) + "\n")
+        except (OSError, TypeError, ValueError) as exc:
+            self.log(f"轨迹诊断写入失败，已停用记录：{exc}")
+            self.close_trace()
+
+    def close_trace(self):
+        if self.trace_file is not None:
+            try:
+                self.trace_file.close()
+            except OSError as exc:
+                self.log(f"关闭轨迹诊断记录失败：{exc}")
+            self.trace_file = None
 
     def stream_finished(self):
-        self.start_button.setEnabled(True); self.stop_button.setEnabled(False)
+        if self.eskf is not None:
+            self.trace_event("smoothed_trajectory", timestamps=self.eskf.history_times,
+                             positions=self.eskf.history_positions)
+        self.trace_event("stop", wall_time=time.time())
+        self.close_trace()
+        if self._want_stream and not self._closing:
+            self.status.setText("连接中断，2 秒后自动重连…")
+            self.log("连接中断；自动重连后将重置轨迹并重新静止标定")
+            self.start_button.setEnabled(False); self.stop_button.setEnabled(True)
+            self.reconnect_timer.start()
+        else:
+            self.start_button.setEnabled(True); self.stop_button.setEnabled(False)
 
     def accept_sample(self, sample: Sample):
         icm_accel_mpu = None
@@ -672,28 +788,59 @@ class MainWindow(QMainWindow):
         sample.accel = output.accel
         sample.gyro = tuple(sample.mpu_gyro)
         self.samples.append(sample)
+        self.trace_event("sample", **vars(sample))
 
-        if self.last_timestamp is None or sample.timestamp <= self.last_timestamp:
-            self.last_timestamp = sample.timestamp
+        # Trajectory uses one complete IMU at one physical point. Fusion plots
+        # retain the legacy cross-IMU Y fallback for comparison only.
+        accel = np.asarray(sample.icm_accel_mpu, dtype=float)
+        gyro = np.asarray(sample.icm_gyro_mpu, dtype=float)
+        trajectory_valid = (sample.icm_valid and accel.shape == (3,) and gyro.shape == (3,)
+                            and np.isfinite(accel).all() and np.isfinite(gyro).all()
+                            and abs(sample.icm_age_ms) <= 30
+                            and 0 < np.linalg.norm(sample.icm_accel) < 16*GRAVITY
+                            and np.max(np.abs(sample.icm_gyro)) < 1999.)
+        cutoff = sample.timestamp - TRAJECTORY_HISTORY_SECONDS
+        while self.positions and self.positions[0][0] < cutoff:
+            self.positions.popleft()
+        if not trajectory_valid:
+            self.stationary_samples.clear()
+            self.static_counter = 0
+            self.attitude_samples.clear()
+            self.is_static = False
+            self.last_timestamp = None
             return
-        dt = min(sample.timestamp - self.last_timestamp, 0.1)
-        self.last_timestamp = sample.timestamp
-
-        accel = np.asarray(sample.accel if sample.accel is not None
-                           else mpu_corrected, dtype=float)
-        gyro = np.asarray(sample.gyro, dtype=float)
+        # Protocol age is icm_time - mapped_mpu_time; recover ICM read timestamp.
+        trajectory_time = sample.timestamp + sample.icm_age_ms / 1000.
+        previous_timestamp = self.last_timestamp
+        self.last_timestamp = trajectory_time
+        if previous_timestamp is None:
+            return
+        dt = trajectory_time - previous_timestamp
+        if not 0 < dt <= 0.1:
+            self.clear_data()
+            self.log("采样时间中断，ESKF 已重置；请静止重新初始化")
+            return
 
         if not self.attitude_ready:
-            self.attitude_samples.append((accel, gyro))
+            self.attitude_samples.append((accel, gyro, sample.mpu_gyro))
             if len(self.attitude_samples) >= 100:
+                accel_window = np.array([item[0] for item in self.attitude_samples])
+                gyro_window = np.array([item[1] for item in self.attitude_samples])
+                if (np.max(accel_window.std(axis=0)) > 0.12
+                        or np.max(gyro_window.std(axis=0)) > 0.8
+                        or np.linalg.norm(np.radians(gyro_window.mean(axis=0))) > 0.2
+                        or not 9.0 < np.linalg.norm(accel_window.mean(axis=0)) < 10.5):
+                    return
                 accel_mean = np.mean([item[0] for item in self.attitude_samples], axis=0)
                 gyro_mean = np.radians(np.mean([item[1] for item in self.attitude_samples], axis=0))
                 magnitude = float(np.linalg.norm(accel_mean))
                 self.gravity = magnitude if 9.0 <= magnitude <= 10.5 else GRAVITY
                 self.accel_baseline = accel_mean
                 self.gyro_bias = gyro_mean
+                self.mpu_display_bias = np.radians(np.mean([item[2] for item in self.attitude_samples], axis=0))
                 self.quaternion = quaternion_from_gravity(accel_mean)
                 self.gyro_quaternion = self.quaternion.copy()
+                self.eskf = InertialESKF(self.quaternion, gyro_mean, self.gravity)
                 self.filtered_accel = accel_mean.copy()
                 self.filtered_gyro = np.zeros(3)
                 self.attitude_ready = True
@@ -703,33 +850,41 @@ class MainWindow(QMainWindow):
 
         alpha = self.alpha_spin.value()
         self.filtered_accel += alpha * (accel - self.filtered_accel)
-        self.filtered_gyro += alpha * (np.radians(gyro) - self.gyro_bias - self.filtered_gyro)
-        if sample.accel is not None:
-            self.quaternion = update_quaternion(
-                self.quaternion, self.filtered_gyro, self.filtered_accel, dt,
-                self.kp_spin.value())
-        else:
-            self.quaternion = integrate_gyro(self.quaternion, self.filtered_gyro, dt)
+        self.filtered_gyro += alpha * (np.radians(sample.mpu_gyro) - self.mpu_display_bias - self.filtered_gyro)
         self.gyro_quaternion = integrate_gyro(self.gyro_quaternion, self.filtered_gyro, dt)
-
-        if sample.fusion_state == STATE_INVALID:
-            return
-
-        if self.gravity_check.isChecked():
-            world_accel = rotation_matrix(self.quaternion) @ self.filtered_accel - \
-                np.array([0.0, 0.0, self.gravity])
-        else:
-            world_accel = self.filtered_accel - self.accel_baseline
-        gyro_norm = float(np.linalg.norm(self.filtered_gyro))
-        static_now = float(np.linalg.norm(world_accel)) < 0.2 and gyro_norm < 0.06
-        self.static_counter = self.static_counter + 1 if static_now else 0
-        self.is_static = self.static_counter >= 10
+        # Feed unfiltered SI measurements to the ESKF; display smoothing is separate.
+        position_before = self.eskf.p.copy()
+        self.eskf.predict(accel, np.radians(gyro), dt)
+        position_predicted = self.eskf.p.copy()
+        velocity_predicted = self.eskf.v.copy()
+        self.stationary_samples.append((accel.copy(), np.radians(gyro)))
+        aw = np.array([item[0] for item in self.stationary_samples])
+        gw = np.array([item[1] for item in self.stationary_samples])
+        self.is_static = stationary_imu(aw, gw, self.eskf.bg, self.gravity)
+        self.static_counter = self.static_counter + 1 if self.is_static else 0
         if self.zupt_check.isChecked() and self.is_static:
-            self.velocity[:] = 0.0
-        else:
-            self.velocity = (self.velocity + world_accel * dt) * self.damping.value()
-        self.position += self.velocity * dt
-        self.positions.append(self.position.copy())
+            self.eskf.update_zero_velocity()
+            # 50 Hz stream: only use the overlapping window means every 5 frames.
+            if self.static_counter % 5 == 0:
+                self.eskf.update_stationary_imu(aw.mean(axis=0), gw.mean(axis=0))
+        self.quaternion = self.eskf.q.copy()
+        self.velocity = self.eskf.v.copy()
+        self.position = self.eskf.p.copy()
+        self.eskf.record_position(sample.timestamp, TRAJECTORY_HISTORY_SECONDS)
+        self.positions = deque(zip(self.eskf.history_times,
+                                   self.eskf.history_positions.copy()), maxlen=2500)
+        self.trace_event("estimate", timestamp=sample.timestamp, seq=sample.seq,
+                         position=self.position, velocity=self.velocity, quaternion=self.quaternion,
+                         source="ICM20608", imu_time=trajectory_time,
+                         input_accel=accel, input_gyro_dps=gyro,
+                         predicted_step=position_predicted-position_before,
+                         correction_step=self.position-position_predicted,
+                         velocity_predicted=velocity_predicted, static=self.is_static,
+                         zupt_enabled=self.zupt_check.isChecked(),
+                         zupt_updates=self.eskf.zupt_updates,
+                         stationary_updates=self.eskf.stationary_updates,
+                         accel_bias=self.eskf.ba, gyro_bias=self.eskf.bg,
+                         accel_std=aw.std(axis=0), gyro_std=gw.std(axis=0))
 
     def refresh_plots(self):
         if self._closing:
@@ -741,7 +896,7 @@ class MainWindow(QMainWindow):
             latest = self.samples[-1]
             cutoff = latest.timestamp - self.window_seconds.value()
             visible = [sample for sample in self.samples if sample.timestamp >= cutoff]
-            self.canvas.update_data(visible, self.positions, self.gyro_quaternion,
+            self.canvas.update_data(visible, [position for _, position in self.positions], self.gyro_quaternion,
                                     self.raw_check.isChecked())
             rate = 0.0 if len(visible) < 2 else (len(visible)-1) / max(visible[-1].timestamp-visible[0].timestamp, 1e-6)
             state_text = STATE_TEXT.get(latest.fusion_state, latest.fusion_state)
@@ -759,13 +914,13 @@ class MainWindow(QMainWindow):
                 gyro_attitude = "姿态(陀螺) R/P/Y: 标定中…"
             if self.quaternion is not None:
                 roll, pitch, yaw = euler_degrees(self.quaternion)
-                gravity_attitude = f"姿态(重力校正) R/P/Y: {roll:.1f} / {pitch:.1f} / {yaw:.1f} °"
+                gravity_attitude = f"姿态(ESKF) R/P/Y: {roll:.1f} / {pitch:.1f} / {yaw:.1f} °"
             else:
-                gravity_attitude = "姿态(重力校正) R/P/Y: 标定中…"
+                gravity_attitude = "姿态(ESKF) R/P/Y: 标定中…"
             self.metrics.setText(
                 f"seq: {latest.seq}\n频率: {rate:.1f} Hz\nMPU 温度: {latest.temperature:.2f} °C\n"
                 f"I²C/TX 错误: {latest.i2c_errors}/{latest.tx_errors}\n"
-                f"{gyro_attitude}\n{gravity_attitude}\n静止: {'是' if self.is_static else '否'}"
+                f"{gyro_attitude}\n{gravity_attitude}\nICM ESKF 零速/静止观测: {self.eskf.zupt_updates if self.eskf else 0}/{self.eskf.stationary_updates if self.eskf else 0}\n静止: {'是' if self.is_static else '否'}"
             )
         except Exception:
             # An exception escaping a Qt timer slot makes PyQt5 call abort().
@@ -776,25 +931,39 @@ class MainWindow(QMainWindow):
             self.stop_stream()
 
     def clear_data(self):
+        self.trace_event("clear")
         self.samples.clear(); self.positions.clear()
         self.attitude_samples.clear(); self.attitude_ready = False
+        self.stationary_samples.clear(); self.eskf = None
         self.accel_baseline = None; self.gyro_bias = np.zeros(3)
+        self.mpu_display_bias = np.zeros(3)
         self.quaternion = None; self.gyro_quaternion = None
         self.filtered_accel = None; self.filtered_gyro = np.zeros(3)
         self.static_counter = 0; self.is_static = False
         self.velocity[:] = 0; self.position[:] = 0; self.last_timestamp = None
         self.last_spi_errors = 0; self.last_sync_errors = 0
         self.fusion = FusionStateMachine()
+        self.canvas.clear_data()
+        self.metrics.setText("等待数据…")
+        self.fusion_label.setText("融合状态：—")
+        self.icm_label.setText("ICM：—")
         self.log("已清空曲线、轨迹、融合状态和积分状态")
 
     def closeEvent(self, event):
         self._closing = True
+        self._want_stream = False
+        self.reconnect_timer.stop()
         self.timer.stop()
         if self.worker and self.worker.isRunning():
             self.worker.stop()
-            if not self.worker.wait(3000):
+            if not self.worker.wait(6000):
                 self.worker.terminate()
                 self.worker.wait(1000)
+        if self.eskf is not None:
+            self.trace_event("smoothed_trajectory", timestamps=self.eskf.history_times,
+                             positions=self.eskf.history_positions)
+        self.trace_event("close", wall_time=time.time())
+        self.close_trace()
         event.accept()
 
 
@@ -802,6 +971,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--demo", action="store_true", help="use simulated 50 Hz dual-IMU data")
     parser.add_argument("--quit-after", type=float, help=argparse.SUPPRESS)
+    parser.add_argument("--trajectory-log", type=Path, help="append raw IMU and ESKF diagnostics to JSONL")
     args = parser.parse_args()
 
     def report_unhandled(exc_type, exc_value, exc_traceback):
@@ -810,7 +980,9 @@ def main() -> int:
         traceback.print_exception(exc_type, exc_value, exc_traceback)
 
     sys.excepthook = report_unhandled
-    app = QApplication(sys.argv[:1]); window = MainWindow(args.demo); window.show()
+    app = QApplication(sys.argv[:1]); window = MainWindow(args.demo)
+    window.trace_path = args.trajectory_log
+    window.show()
     if args.quit_after:
         QTimer.singleShot(int(args.quit_after * 1000), window.close)
     return app.exec_()
