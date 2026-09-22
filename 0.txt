@@ -4,7 +4,7 @@ screen /dev/cu.usbserial-1140 115200
 
 screen -D -r 30672
 
-ping -c 4 169.254.50.2 && ssh -o ConnectTimeout=5 mp157 'echo ssh_ok'
+ping -c 4 169.254.50.2 && ssh -o ConnectTimeout=1 mp157 'echo ssh_ok'
 
 ssh \
   -o B -o ConnectTimeout=5 \
